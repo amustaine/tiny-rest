@@ -147,7 +147,7 @@ class RequestHandler
      * @return ConstraintViolationListInterface
      * @throws ValidationException
      */
-    private function validateObject($object) : ConstraintViolationListInterface
+    public function validateObject($object) : ConstraintViolationListInterface
     {
         $violations = $this->validator->validate($object);
 
