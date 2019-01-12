@@ -3,6 +3,7 @@
 namespace TinyRest\Hydrator;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use TinyRest\Annotations\Relation;
 use TinyRest\TransferObject\TransferObjectInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Id;
@@ -22,27 +23,29 @@ class EntityHydrator
 
     public function hydrate(TransferObjectInterface $transferObject, $entity, ?bool $clearFields = false)
     {
-        $propertyReader   = new PropertyReader($transferObject);
-        $relations        = $propertyReader->getRelations();
+        $metaReader = new MetaReader($transferObject);
+        $relations  = $metaReader->getRelations();
+
         $propertyAccessor = new PropertyAccessor();
 
         if (true === $clearFields) {
             $this->clearFields($entity);
         }
 
-        foreach ($propertyReader->getProperties() as $propertyName => $property) {
+        foreach ($metaReader->getMapping() as $propertyName => $annotation) {
+            if (!$annotation->mapped) {
+                continue;
+            }
+
             $value = $propertyAccessor->getValue($transferObject, $propertyName);
 
             if (null !== $value) {
                 if (isset($relations[$propertyName])) {
-                    $value = $this->loadRelation($relations[$propertyName]['class'], $relations[$propertyName]['byField'], $value);
+                    $relation = $relations[$propertyName];
+                    $value    = $this->loadRelation($relation->class, $relation->byField, $value);
                 }
 
-                $propertyAccessor->setValue(
-                    $entity,
-                    $property['mappedBy'] ?: $property['name'],
-                    $value
-                );
+                $propertyAccessor->setValue($entity, $annotation->column, $value);
             }
         }
     }

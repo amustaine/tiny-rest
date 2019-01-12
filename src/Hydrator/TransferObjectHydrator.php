@@ -4,6 +4,7 @@ namespace TinyRest\Hydrator;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use TinyRest\Annotations\OnObjectHydrated;
 use TinyRest\Annotations\Property;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -14,22 +15,50 @@ class TransferObjectHydrator
      */
     private $data = [];
 
+    /**
+     * @param TransferObjectInterface $transferObject
+     * @param Request $request
+     *
+     * @throws \Exception
+     */
     public function hydrate(TransferObjectInterface $transferObject, Request $request)
     {
         $this->data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
 
-        $propertyReader   = new PropertyReader($transferObject);
+        $metaReader   = new MetaReader($transferObject);
         $propertyAccessor = new PropertyAccessor();
 
-        foreach ($propertyReader->getProperties() as $property) {
-            $paramName = $property['paramName'];
-            $value     = $this->getValue($paramName);
+        foreach ($metaReader->getProperties() as $propertyName => $annotation) {
+            $value     = $this->getValue($annotation->name);
 
-            if (Property::TYPE_ARRAY === $property['type']) {
+            if (Property::TYPE_ARRAY === $annotation->type) {
                 $value = $this->splitStringToArray($value);
             }
 
-            $propertyAccessor->setValue($transferObject, $property['name'], $value);
+            if ($annotation->mapped) {
+                $propertyAccessor->setValue($transferObject, $propertyName, $value);
+            }
+        }
+
+        $this->runCallbacks($metaReader->getOnObjectHydratedAnnotations(), $transferObject);
+    }
+
+    /**
+     * @param TransferObjectInterface $transferObject
+     * @param OnObjectHydrated[] $onObjectHydrated
+     *
+     * @throws \Exception
+     */
+    private function runCallbacks(array $onObjectHydrated, TransferObjectInterface $transferObject)
+    {
+        foreach ($onObjectHydrated as $event) {
+            if (!empty($event->method)) {
+                [$transferObject, $event->method]();
+            } elseif (is_callable($event->callback)) {
+                ($event->callback)($transferObject);
+            } else {
+                throw new \Exception('Invalid callback');
+            }
         }
     }
 
@@ -57,7 +86,7 @@ class TransferObjectHydrator
 
         $body = json_decode($request->getContent(), true);
 
-        if (!$body) {
+        if (json_last_error()) {
             throw new \Exception('Invalid JSON');
         }
 

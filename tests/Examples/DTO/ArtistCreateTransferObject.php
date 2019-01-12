@@ -4,7 +4,6 @@ namespace TinyRest\Tests\Examples\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use TinyRest\Annotations\Property;
-use TinyRest\Tests\Examples\Entity\Artist;
 use TinyRest\TransferObject\CreateTransferObjectInterface;
 
 class ArtistCreateTransferObject implements CreateTransferObjectInterface
@@ -26,9 +25,4 @@ class ArtistCreateTransferObject implements CreateTransferObjectInterface
      * @Assert\NotBlank()
      */
     public $year;
-
-    public function getCreateEntityClassName() : string
-    {
-        return Artist::class;
-    }
 }

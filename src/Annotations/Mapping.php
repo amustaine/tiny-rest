@@ -5,13 +5,11 @@ namespace TinyRest\Annotations;
 /**
  * @Annotation
  */
-class Property
+class Mapping
 {
-    const TYPE_ARRAY = 'array';
-
-    public $name;
-
-    public $type;
+    public $column;
 
     public $mapped = true;
+
+    public $type = null;
 }
