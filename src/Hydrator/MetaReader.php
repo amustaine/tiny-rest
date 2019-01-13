@@ -69,11 +69,21 @@ class MetaReader
                 }
             }
 
-            if (empty($this->mapping[$propertyName])) {
-                $mapping         = new Mapping();
-                $mapping->column = $propertyName;
+            if (isset($this->properties[$propertyName])) {
+                if (empty($this->mapping[$propertyName])) {
+                    $mapping         = new Mapping();
+                    $mapping->column = $propertyName;
 
-                $this->mapping[$propertyName] = $mapping;
+                    $this->mapping[$propertyName] = $mapping;
+                }
+            } else {
+                if (isset($this->mapping[$propertyName])) {
+                    unset($this->mapping[$propertyName]);
+                }
+
+                if (isset($this->relations[$propertyName])) {
+                    unset($this->relations[$propertyName]);
+                }
             }
         }
     }
