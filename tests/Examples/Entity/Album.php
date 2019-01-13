@@ -43,6 +43,16 @@ class Album
     private $cover;
 
     /**
+     * @ORM\Column(type="datetime", name="created_at")
+     */
+    private $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /**
      * @return int
      */
     public function getId() : int

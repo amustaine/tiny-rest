@@ -14,7 +14,7 @@ class MetaReaderTest extends TestCase
         $class = new class implements TransferObjectInterface
         {
             /**
-             * @Relation(class="SomeClass", byField="foo")
+             * @Relation(byField="foo")
              */
             public $foo;
         };
@@ -26,7 +26,6 @@ class MetaReaderTest extends TestCase
         $this->assertNotEmpty($relations);
         $this->assertCount(1, $relations);
         $this->assertTrue(isset($relations['foo']));
-        $this->assertEquals('SomeClass', $relations['foo']->class);
         $this->assertEquals('foo', $relations['foo']->byField);
     }
 }

@@ -7,7 +7,5 @@ namespace TinyRest\Annotations;
  */
 class Relation
 {
-    public $class;
-
     public $byField = 'id';
 }

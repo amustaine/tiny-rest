@@ -49,6 +49,11 @@ class UserTransferObject implements TransferObjectInterface
 
     public $date;
 
+    /**
+     * @Property()
+     */
+    public $birthDate;
+
     public function parseName()
     {
         $parts           = explode(' ', $this->name);

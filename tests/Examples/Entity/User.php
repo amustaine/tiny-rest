@@ -55,6 +55,11 @@ class User
     private $hobby;
 
     /**
+     * @ORM\Column(name="birth_date", type="date")
+     */
+    private $birthDate;
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -158,6 +163,26 @@ class User
     public function setEmail(?string $email) : User
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBirthDate() : \DateTime
+    {
+        return $this->birthDate;
+    }
+
+    /**
+     * @param \DateTime $birthDate
+     *
+     * @return User
+     */
+    public function setBirthDate(\DateTime $birthDate) : User
+    {
+        $this->birthDate = $birthDate;
 
         return $this;
     }

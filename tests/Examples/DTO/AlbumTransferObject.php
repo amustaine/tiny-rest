@@ -21,13 +21,17 @@ class AlbumTransferObject implements CreateTransferObjectInterface, UpdateTransf
 
     /**
      * @Property()
-     * @Relation(class="TinyRest\Tests\Examples\Entity\Artist", byField="name")
+     * @Relation(byField="name")
      */
     public $artist;
 
     /**
      * @Property()
-     * @Relation(class="TinyRest\Tests\Examples\Entity\Cover")
      */
     public $cover;
+
+    /**
+     * @Property()
+     */
+    public $releaseDate;
 }
