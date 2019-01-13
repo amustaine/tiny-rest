@@ -1,8 +1,9 @@
 <?php
 
-namespace TinyRest\Tests;
+namespace TinyRest\Tests\Hydrator;
 
 use TinyRest\Hydrator\EntityHydrator;
+use TinyRest\Tests\DatabaseTestCase;
 use TinyRest\Tests\Examples\DTO\AlbumTransferObject;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
 use TinyRest\Tests\Examples\Entity\Album;
@@ -10,7 +11,7 @@ use TinyRest\Tests\Examples\Entity\Artist;
 use TinyRest\Tests\Examples\Entity\Cover;
 use TinyRest\Tests\Examples\Entity\User;
 
-class EntityHydratorTest extends RequestHandlerCase
+class EntityHydratorTest extends DatabaseTestCase
 {
     public function testSimple()
     {

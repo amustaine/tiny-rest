@@ -1,6 +1,6 @@
 <?php
 
-namespace TinyRest\Tests;
+namespace TinyRest\Tests\Hydrator;
 
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use TinyRest\Annotations\Relation;
