@@ -23,7 +23,7 @@ class NativeQueryAdapter implements AdapterInterface
     public function getNbResults()
     {
         $qb  = $this->nativeQueryBuilder->getQueryBuilder();
-        $sql = "SELECT COUNT(*) as cnt FROM ({$qb->getSQL()})";
+        $sql = "SELECT COUNT(*) as cnt FROM ({$qb->getSQL()}) sub";
 
         return (int)$qb->getConnection()->executeQuery($sql, $qb->getParameters(), $qb->getParameterTypes())->fetchColumn();
     }
