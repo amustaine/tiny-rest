@@ -19,16 +19,28 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
         $this->entityManager = $entityManager;
     }
 
-    abstract public function getQueryBuilder() : QueryBuilder;
+    abstract public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder;
 
     public function getData(TransferObjectInterface $transferObject) : QueryBuilder
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->getQueryBuilder($transferObject);
 
         if ($transferObject instanceof SortableListTransferObjectInterface) {
             $this->applySort($queryBuilder, $transferObject);
         }
 
         return $queryBuilder;
+    }
+
+    public function createQueryBuilder() : QueryBuilder
+    {
+        return $this->entityManager->createQueryBuilder();
+    }
+
+    protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
+    {
+        if (in_array($transferObject->getSort(), $transferObject->getAllowedToSort())) {
+            $queryBuilder->addOrderBy($transferObject->getSort(), $transferObject->getDir());
+        }
     }
 }
