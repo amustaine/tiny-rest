@@ -5,6 +5,7 @@ namespace TinyRest\Hydrator;
 use Doctrine\Common\Annotations\AnnotationReader;
 use TinyRest\Annotations\Mapping;
 use TinyRest\Annotations\OnObjectHydrated;
+use TinyRest\Annotations\OnObjectValid;
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
 use TinyRest\TransferObject\TransferObjectInterface;
@@ -29,6 +30,8 @@ class MetaReader
 
     private $onObjectHydrated = [];
 
+    private $onObjectValid = [];
+
     public function __construct(TransferObjectInterface $transferObject)
     {
         $this->annotationReader = new AnnotationReader();
@@ -45,6 +48,8 @@ class MetaReader
         foreach ($classAnnotations as $annotation) {
             if ($annotation instanceof OnObjectHydrated) {
                 $this->onObjectHydrated[] = $annotation;
+            } elseif ($annotation instanceof OnObjectValid) {
+                $this->onObjectValid[] = $annotation;
             }
         }
     }
@@ -118,5 +123,13 @@ class MetaReader
     public function getOnObjectHydratedAnnotations() : array
     {
         return $this->onObjectHydrated;
+    }
+
+    /**
+     * @return OnObjectValid[]
+     */
+    public function getOnObjectValidAnnotations() : array
+    {
+        return $this->onObjectValid;
     }
 }

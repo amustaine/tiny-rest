@@ -7,6 +7,7 @@ use TinyRest\Annotations\Mapping;
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
 use TinyRest\Hydrator\MetaReader;
+use TinyRest\Tests\Examples\DTO\UserTransferObject;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 class MetaReaderTest extends TestCase
@@ -55,5 +56,16 @@ class MetaReaderTest extends TestCase
 
         $this->assertNotEmpty($mapping);
         $this->assertCount(1, $mapping);
+    }
+
+    public function testOnObjectValid()
+    {
+        $transferObject = new UserTransferObject();
+        $metaReader     = new MetaReader($transferObject);
+        $onObjectValid  = $metaReader->getOnObjectValidAnnotations();
+
+        $this->assertNotEmpty($onObjectValid);
+        $this->assertCount(1, $onObjectValid);
+        $this->assertEquals('setNumber', $onObjectValid[0]->method);
     }
 }

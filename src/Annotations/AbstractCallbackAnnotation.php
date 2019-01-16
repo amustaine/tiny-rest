@@ -6,6 +6,9 @@ namespace TinyRest\Annotations;
  * @Annotation
  * @Target({"CLASS"})
  */
-class OnObjectHydrated extends AbstractCallbackAnnotation
+abstract class AbstractCallbackAnnotation
 {
+    public $method;
+
+    public $callback;
 }

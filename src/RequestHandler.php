@@ -125,10 +125,11 @@ class RequestHandler
      */
     public function handleTransferObject(Request $request, TransferObjectInterface $transferObject) : TransferObjectInterface
     {
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->validateObject($transferObject);
+        $transferObjectHydrator->runOnObjectValidCallbacks();
 
         return $transferObject;
     }

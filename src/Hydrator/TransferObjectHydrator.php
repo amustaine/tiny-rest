@@ -4,7 +4,6 @@ namespace TinyRest\Hydrator;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use TinyRest\Annotations\OnObjectHydrated;
 use TinyRest\Annotations\Property;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -16,46 +15,59 @@ class TransferObjectHydrator
     private $data = [];
 
     /**
-     * @param TransferObjectInterface $transferObject
+     * @var TransferObjectInterface
+     */
+    private $transferObject;
+
+    /**
+     * @var MetaReader
+     */
+    private $metaReader;
+
+    public function __construct(TransferObjectInterface $transferObject)
+    {
+        $this->transferObject = $transferObject;
+        $this->metaReader     = new MetaReader($transferObject);
+    }
+
+    /**
      * @param Request $request
      *
      * @throws \Exception
      */
-    public function hydrate(TransferObjectInterface $transferObject, Request $request)
+    public function hydrate(Request $request)
     {
         $this->data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
 
-        $metaReader   = new MetaReader($transferObject);
         $propertyAccessor = new PropertyAccessor();
 
-        foreach ($metaReader->getProperties() as $propertyName => $annotation) {
-            $value     = $this->getValue($annotation->name);
+        foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
+            $value = $this->getValue($annotation->name);
 
             if (Property::TYPE_ARRAY === $annotation->type) {
                 $value = $this->splitStringToArray($value);
             }
 
             if ($annotation->mapped) {
-                $propertyAccessor->setValue($transferObject, $propertyName, $value);
+                $propertyAccessor->setValue($this->transferObject, $propertyName, $value);
             }
         }
 
-        $this->runCallbacks($metaReader->getOnObjectHydratedAnnotations(), $transferObject);
+        $this->runCallbacks($this->metaReader->getOnObjectHydratedAnnotations());
     }
 
     /**
-     * @param TransferObjectInterface $transferObject
-     * @param OnObjectHydrated[] $onObjectHydrated
+     * @param array $callbacks
      *
      * @throws \Exception
      */
-    private function runCallbacks(array $onObjectHydrated, TransferObjectInterface $transferObject)
+    private function runCallbacks(array $callbacks)
     {
-        foreach ($onObjectHydrated as $event) {
+        foreach ($callbacks as $event) {
             if (!empty($event->method)) {
-                [$transferObject, $event->method]();
+                [$this->transferObject, $event->method]();
             } elseif (is_callable($event->callback)) {
-                ($event->callback)($transferObject);
+                ($event->callback)($this->transferObject);
             } else {
                 throw new \Exception('Invalid callback');
             }
@@ -107,5 +119,10 @@ class TransferObjectHydrator
         }
 
         return $data;
+    }
+
+    public function runOnObjectValidCallbacks()
+    {
+        $this->runCallbacks($this->metaReader->getOnObjectValidAnnotations());
     }
 }

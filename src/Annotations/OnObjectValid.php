@@ -6,6 +6,6 @@ namespace TinyRest\Annotations;
  * @Annotation
  * @Target({"CLASS"})
  */
-class OnObjectHydrated extends AbstractCallbackAnnotation
+class OnObjectValid extends AbstractCallbackAnnotation
 {
 }

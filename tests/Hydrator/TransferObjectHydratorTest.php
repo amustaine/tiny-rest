@@ -13,8 +13,8 @@ class TransferObjectHydratorTest extends TestCase
     {
         $request = Request::create('localhost', 'POST', [], [], [], [], json_encode([]));
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertNotEmpty($transferObject);
     }
@@ -23,10 +23,10 @@ class TransferObjectHydratorTest extends TestCase
     {
         $request = Request::create('localhost', 'POST', [], [], [], [], 'userName=John');
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
 
         $this->expectExceptionMessage('Invalid JSON');
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator->hydrate($request);
     }
 
     public function testWithGet()
@@ -34,8 +34,8 @@ class TransferObjectHydratorTest extends TestCase
         $request = Request::create('localhost', 'GET', ['name' => 'John Doe']);
 
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals('John Doe', $transferObject->name);
     }
@@ -46,8 +46,8 @@ class TransferObjectHydratorTest extends TestCase
         $request = Request::create('localhost', 'POST', [], [], [], [], json_encode($data));
 
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals('John Doe', $transferObject->name);
     }
@@ -56,8 +56,8 @@ class TransferObjectHydratorTest extends TestCase
     {
         $request                = Request::create('localhost', 'GET', ['user_name' => 'John']);
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals('John', $transferObject->userName);
     }
@@ -70,8 +70,8 @@ class TransferObjectHydratorTest extends TestCase
             'email'     => 'foo@bar.baz'
         ]);
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals('Actor', $transferObject->lifeStyle);
         $this->assertEquals('John Doe', $transferObject->name);
@@ -86,8 +86,8 @@ class TransferObjectHydratorTest extends TestCase
         $request = Request::create('localhost', 'POST', [], [], [], [], json_encode($data));
 
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals('John', $transferObject->firstName);
         $this->assertEquals('Doe', $transferObject->lastName);
@@ -101,8 +101,8 @@ class TransferObjectHydratorTest extends TestCase
         $request = Request::create('localhost', 'POST', [], [], [], [], json_encode($data));
 
         $transferObject         = new UserTransferObject();
-        $transferObjectHydrator = new TransferObjectHydrator();
-        $transferObjectHydrator->hydrate($transferObject, $request);
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals(date('Ymd'), $transferObject->date);
     }

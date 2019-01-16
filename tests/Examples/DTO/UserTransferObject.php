@@ -4,12 +4,14 @@ namespace TinyRest\Tests\Examples\DTO;
 
 use TinyRest\Annotations\Mapping;
 use TinyRest\Annotations\OnObjectHydrated;
+use TinyRest\Annotations\OnObjectValid;
 use TinyRest\Annotations\Property;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 /**
  * @OnObjectHydrated(method="parseName")
  * @OnObjectHydrated(callback={"TinyRest\Tests\Examples\DTO\UserTransferObject", "setDate"})
+ * @OnObjectValid(method="setNumber")
  */
 class UserTransferObject implements TransferObjectInterface
 {
@@ -54,6 +56,11 @@ class UserTransferObject implements TransferObjectInterface
      */
     public $birthDate;
 
+    /**
+     * @Property()
+     */
+    public $number;
+
     public function parseName()
     {
         $parts           = explode(' ', $this->name);
@@ -64,5 +71,10 @@ class UserTransferObject implements TransferObjectInterface
     public static function setDate(UserTransferObject $object)
     {
         $object->date = date('Ymd');
+    }
+
+    public function setNumber()
+    {
+        $this->number = 10;
     }
 }
