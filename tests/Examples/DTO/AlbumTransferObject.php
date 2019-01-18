@@ -4,10 +4,9 @@ namespace TinyRest\Tests\Examples\DTO;
 
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
-use TinyRest\TransferObject\CreateTransferObjectInterface;
-use TinyRest\TransferObject\UpdateTransferObjectInterface;
+use TinyRest\TransferObject\TransferObjectInterface;
 
-class AlbumTransferObject implements CreateTransferObjectInterface, UpdateTransferObjectInterface
+class AlbumTransferObject implements TransferObjectInterface
 {
     /**
      * @Property()

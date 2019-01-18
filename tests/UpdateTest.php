@@ -2,9 +2,7 @@
 
 namespace TinyRest\Tests;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use TinyRest\RequestHandler;
 use TinyRest\Tests\Examples\DTO\ArtistUpdateTransferObject;
 use TinyRest\Tests\Examples\Entity\Artist;
 

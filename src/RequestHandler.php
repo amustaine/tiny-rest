@@ -15,8 +15,6 @@ use TinyRest\Pagination\PaginationFactory;
 use TinyRest\Provider\ProviderFactory;
 use TinyRest\TransferObject\PaginatedListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
-use TinyRest\TransferObject\UpdateTransferObjectInterface;
-use TinyRest\TransferObject\CreateTransferObjectInterface;
 
 class RequestHandler
 {
@@ -78,13 +76,13 @@ class RequestHandler
 
     /**
      * @param Request $request
-     * @param CreateTransferObjectInterface $transferObject
+     * @param TransferObjectInterface $transferObject
      * @param $entity
      *
      * @return object
      * @throws ValidationException
      */
-    public function create(Request $request, CreateTransferObjectInterface $transferObject, $entity)
+    public function create(Request $request, TransferObjectInterface $transferObject, $entity)
     {
         $this->handleTransferObject($request, $transferObject);
 
@@ -98,13 +96,13 @@ class RequestHandler
 
     /**
      * @param Request $request
-     * @param UpdateTransferObjectInterface $transferObject
+     * @param TransferObjectInterface $transferObject
      * @param $entity
      *
      * @return object
      * @throws ValidationException
      */
-    public function update(Request $request, UpdateTransferObjectInterface $transferObject, $entity)
+    public function update(Request $request, TransferObjectInterface $transferObject, $entity)
     {
         $this->handleTransferObject($request, $transferObject);
 
