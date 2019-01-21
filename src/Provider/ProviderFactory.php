@@ -34,7 +34,7 @@ class ProviderFactory
      */
     public function createOrmProvider(string $class) : ORMQueryBuilderProvider
     {
-
+        return new $class($this->entityManager);
     }
 
     /**
