@@ -57,7 +57,7 @@ trait SortTrait
      */
     public function isAllowedToSort() : bool
     {
-        return $this->getSort() && in_array($this->getSort(), $this->allowedToSort());
+        return $this->getSort() && in_array($this->getSort(), $this->getAllowedToSort());
     }
 
 }
