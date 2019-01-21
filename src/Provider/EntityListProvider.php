@@ -56,8 +56,8 @@ class EntityListProvider implements ProviderInterface
 
     protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
     {
-        if (in_array($transferObject->getSort(), $transferObject->getAllowedToSort())) {
-            $queryBuilder->addOrderBy('c.' . $transferObject->getSort(), $transferObject->getDir());
+        if ($transferObject->isAllowedToSort()) {
+            $queryBuilder->addOrderBy('c.' . $transferObject->getSort(), $transferObject->getSortDir());
         }
     }
 }

@@ -39,9 +39,8 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
 
     protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
     {
-        if (in_array($transferObject->getSort(), $transferObject->getAllowedToSort())) {
-            $rootAlias = $queryBuilder->getRootAliases()[0];
-            $queryBuilder->addOrderBy($rootAlias . '.' . $transferObject->getSort(), $transferObject->getDir());
+        if ($transferObject->isAllowedToSort()) {
+            $queryBuilder->addOrderBy($transferObject->getSort(), $transferObject->getSortDir());
         }
     }
 }

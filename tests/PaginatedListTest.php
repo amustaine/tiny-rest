@@ -45,7 +45,7 @@ class PaginatedListTest extends RequestHandlerCase
 
     public function testSort()
     {
-        $request        = Request::create('localhost', 'GET', ['page' => 2, 'pageSize' => 2, 'sort' => 'id', 'dir' => 'desc']);
+        $request        = Request::create('localhost', 'GET', ['page' => 2, 'pageSize' => 2, 'sort' => 'id', 'sortDir' => 'desc']);
         $transferObject = new SongPaginatedListTransferObject();
 
         $handler    = $this->createRequestHandler();

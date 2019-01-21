@@ -69,8 +69,8 @@ abstract class NativeQueryProvider implements ProviderInterface
 
     protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
     {
-        if (in_array($transferObject->getSort(), $transferObject->getAllowedToSort())) {
-            $queryBuilder->addOrderBy($transferObject->getSort(), $transferObject->getDir());
+        if ($transferObject->isAllowedToSort()) {
+            $queryBuilder->addOrderBy($transferObject->getSort(), $transferObject->getSortDir());
         }
     }
 }

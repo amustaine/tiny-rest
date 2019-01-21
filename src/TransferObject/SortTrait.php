@@ -39,7 +39,7 @@ trait SortTrait
     /**
      * @return string|null
      */
-    public function getDir() : ?string
+    public function getSortDir() : ?string
     {
         return $this->sortDir;
     }
@@ -47,7 +47,7 @@ trait SortTrait
     /**
      * @param string|null $sortDir
      */
-    public function setDir(?string $sortDir)
+    public function setSortDir(?string $sortDir)
     {
         $this->sortDir = $sortDir;
     }
