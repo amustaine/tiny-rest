@@ -40,7 +40,7 @@ abstract class NativeQueryProvider implements ProviderInterface
      *
      * @return NativeQueryBuilder
      */
-    public function getData(TransferObjectInterface $transferObject) : NativeQueryBuilder
+    public function provide(TransferObjectInterface $transferObject) : NativeQueryBuilder
     {
         $qb = $this->getQueryBuilder($transferObject);
 
@@ -49,6 +49,16 @@ abstract class NativeQueryProvider implements ProviderInterface
         }
 
         return new NativeQueryBuilder($this->entityManager, $qb, $this->getRsm($transferObject));
+    }
+
+    /**
+     * @param TransferObjectInterface $transferObject
+     *
+     * @return mixed
+     */
+    public function toArray(TransferObjectInterface $transferObject)
+    {
+        return $this->provide($transferObject)->createNativeQuery()->getResult();
     }
 
     /**

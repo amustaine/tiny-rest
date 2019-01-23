@@ -38,7 +38,7 @@ class PaginationFactory
     public function createCollection(PaginatedListTransferObjectInterface $transferObject, ProviderInterface $dataProvider) : PaginatedCollection
     {
         try {
-            $adapter    = $this->getAdapter($dataProvider->getData($transferObject));
+            $adapter    = $this->getAdapter($dataProvider->provide($transferObject));
             $pagerfanta = new Pagerfanta($adapter);
 
             $pagerfanta

@@ -21,7 +21,7 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
 
     abstract public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder;
 
-    public function getData(TransferObjectInterface $transferObject) : QueryBuilder
+    public function provide(TransferObjectInterface $transferObject) : QueryBuilder
     {
         $queryBuilder = $this->getQueryBuilder($transferObject);
 
@@ -30,6 +30,16 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
         }
 
         return $queryBuilder;
+    }
+
+    /**
+     * @param TransferObjectInterface $transferObject
+     *
+     * @return mixed
+     */
+    public function toArray(TransferObjectInterface $transferObject)
+    {
+        return $this->provide($transferObject)->getQuery()->getResult();
     }
 
     public function createQueryBuilder() : QueryBuilder

@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TinyRest\Provider\ProviderInterface;
+use TinyRest\ListCollection\Collection;
 use TinyRest\Exception\ValidationException;
 use TinyRest\Hydrator\EntityHydrator;
 use TinyRest\Hydrator\TransferObjectHydrator;
@@ -69,9 +70,18 @@ class RequestHandler
         return $this->paginationFactory->createCollection($transferObject, $dataProvider);
     }
 
-    public function getList()
+    /**
+     * @param Request $request
+     * @param PaginatedListTransferObjectInterface $transferObject
+     * @param ProviderInterface $dataProvider
+     *
+     * @return Collection
+     */
+    public function getList(Request $request, PaginatedListTransferObjectInterface $transferObject, ProviderInterface $dataProvider) : Collection
     {
-        //@todo Collection
+        $this->handleTransferObject($request, $transferObject);
+
+        return new Collection($dataProvider->toArray($transferObject));
     }
 
     /**

@@ -18,6 +18,7 @@ class EntityListProvider implements ProviderInterface
      * @var string
      */
     private $class;
+
     /**
      * @var array
      */
@@ -35,7 +36,7 @@ class EntityListProvider implements ProviderInterface
      *
      * @return QueryBuilder
      */
-    public function getData(TransferObjectInterface $transferObject) : QueryBuilder
+    public function provide(TransferObjectInterface $transferObject) : QueryBuilder
     {
         $qb = $this->entityManager->createQueryBuilder();
         $qb
@@ -52,6 +53,16 @@ class EntityListProvider implements ProviderInterface
         }
 
         return $qb;
+    }
+
+    /**
+     * @param TransferObjectInterface $transferObject
+     *
+     * @return mixed
+     */
+    public function toArray(TransferObjectInterface $transferObject)
+    {
+        return $this->provide($transferObject)->getQuery()->getResult();
     }
 
     protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)

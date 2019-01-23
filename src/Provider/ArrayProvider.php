@@ -11,5 +11,10 @@ abstract class ArrayProvider implements ProviderInterface
      *
      * @return array
      */
-    abstract public function getData(TransferObjectInterface $transferObject) : array;
+    abstract public function provide(TransferObjectInterface $transferObject) : array;
+
+    public function toArray(TransferObjectInterface $transferObject)
+    {
+        return $this->provide($transferObject);
+    }
 }

@@ -23,7 +23,17 @@ abstract class DBALQueryBuilderProvider implements ProviderInterface
      *
      * @return QueryBuilder
      */
-    abstract public function getData(TransferObjectInterface $transferObject) : QueryBuilder;
+    abstract public function provide(TransferObjectInterface $transferObject) : QueryBuilder;
+
+    /**
+     * @param TransferObjectInterface $transferObject
+     *
+     * @return array
+     */
+    public function toArray(TransferObjectInterface $transferObject) : array
+    {
+        return $this->provide($transferObject)->execute()->fetchAll();
+    }
 
     /**
      * @return QueryBuilder

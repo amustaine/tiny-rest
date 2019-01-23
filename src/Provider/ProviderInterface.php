@@ -9,5 +9,10 @@ interface ProviderInterface
     /**
      * @param TransferObjectInterface $transferObject
      */
-    public function getData(TransferObjectInterface $transferObject);
+    public function provide(TransferObjectInterface $transferObject);
+
+    /**
+     * @param TransferObjectInterface $transferObject
+     */
+    public function toArray(TransferObjectInterface $transferObject);
 }
