@@ -72,14 +72,20 @@ class RequestHandler
 
     /**
      * @param Request $request
-     * @param PaginatedListTransferObjectInterface $transferObject
+     * @param TransferObjectInterface|null $transferObject
      * @param ProviderInterface $dataProvider
      *
      * @return Collection
      */
-    public function getList(Request $request, PaginatedListTransferObjectInterface $transferObject, ProviderInterface $dataProvider) : Collection
+    public function getList(Request $request, ?TransferObjectInterface $transferObject, ProviderInterface $dataProvider) : Collection
     {
-        $this->handleTransferObject($request, $transferObject);
+        if (null === $transferObject) {
+            $transferObject = new class implements TransferObjectInterface
+            {
+            };
+        } else {
+            $this->handleTransferObject($request, $transferObject);
+        }
 
         return new Collection($dataProvider->toArray($transferObject));
     }
