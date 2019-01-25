@@ -4,8 +4,10 @@ namespace TinyRest\Tests\Hydrator;
 
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use TinyRest\Annotations\Property;
 use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
+use TinyRest\TransferObject\TransferObjectInterface;
 
 class TransferObjectHydratorTest extends TestCase
 {
@@ -105,5 +107,52 @@ class TransferObjectHydratorTest extends TestCase
         $transferObjectHydrator->hydrate($request);
 
         $this->assertEquals(date('Ymd'), $transferObject->date);
+    }
+
+    public function testPropertyAccessorWhenNoParam()
+    {
+        $data = [
+            'fieldA' => 'John Doe',
+        ];
+        $request = Request::create('localhost', 'POST', [], [], [], [], json_encode($data));
+
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property()
+             */
+            private $fieldA;
+
+            /**
+             * @Property()
+             */
+            private $fieldB;
+
+            public function getFieldA() : string
+            {
+                return $this->fieldA;
+            }
+
+            public function setFieldA(string $value)
+            {
+                $this->fieldA = $value;
+            }
+
+            public function getFieldB()
+            {
+                return $this->fieldB;
+            }
+
+            public function setFieldB()
+            {
+                $this->fieldB = 'TEST';
+            }
+        };
+
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
+
+        $this->assertEquals('John Doe', $transferObject->getFieldA());
+        $this->assertNull($transferObject->getFieldB());
     }
 }

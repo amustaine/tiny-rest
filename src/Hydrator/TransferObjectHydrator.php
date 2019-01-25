@@ -42,6 +42,10 @@ class TransferObjectHydrator
         $propertyAccessor = new PropertyAccessor();
 
         foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
+            if (!$this->hasValue($annotation->name)) {
+                continue;
+            }
+
             $value = $this->getValue($annotation->name);
 
             if (Property::TYPE_ARRAY === $annotation->type) {
@@ -72,6 +76,16 @@ class TransferObjectHydrator
                 throw new \Exception('Invalid callback');
             }
         }
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return bool
+     */
+    public function hasValue(string $property) : bool
+    {
+        return array_key_exists($property, $this->data);
     }
 
     /**
