@@ -143,7 +143,7 @@ class TransferObjectHydratorTest extends TestCase
                 return $this->fieldB;
             }
 
-            public function setFieldB()
+            public function setFieldB($value)
             {
                 $this->fieldB = 'TEST';
             }
