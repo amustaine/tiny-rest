@@ -24,10 +24,22 @@ class TransferObjectHydrator
      */
     private $metaReader;
 
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
+
+    /**
+     * @var TypeCaster
+     */
+    private $typeCaster;
+
     public function __construct(TransferObjectInterface $transferObject)
     {
-        $this->transferObject = $transferObject;
-        $this->metaReader     = new MetaReader($transferObject);
+        $this->transferObject   = $transferObject;
+        $this->metaReader       = new MetaReader($transferObject);
+        $this->propertyAccessor = new PropertyAccessor();
+        $this->typeCaster       = new TypeCaster();
     }
 
     /**
@@ -39,7 +51,6 @@ class TransferObjectHydrator
     {
         $this->data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
 
-        $propertyAccessor = new PropertyAccessor();
 
         foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
             if (!$this->hasValue($annotation->name)) {
@@ -48,16 +59,59 @@ class TransferObjectHydrator
 
             $value = $this->getValue($annotation->name);
 
-            if (Property::TYPE_ARRAY === $annotation->type) {
-                $value = $this->splitStringToArray($value);
-            }
-
             if ($annotation->mapped) {
-                $propertyAccessor->setValue($this->transferObject, $propertyName, $value);
+                $this->propertyAccessor->setValue($this->transferObject, $propertyName, $value);
             }
         }
 
         $this->runCallbacks($this->metaReader->getOnObjectHydratedAnnotations());
+    }
+
+    public function castTypes()
+    {
+        foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
+            if (!$annotation->type || !$annotation->mapped) {
+                continue;
+            }
+
+            $value = $this->castType($annotation->type, $this->getValue($annotation->name));
+            $this->propertyAccessor->setValue($this->transferObject, $propertyName, $value);
+        }
+    }
+
+    /**
+     * @param string $type
+     * @param $value
+     *
+     * @return array|bool|\DateTime|null
+     */
+    private function castType(string $type, $value)
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        switch ($type) {
+            case Property::TYPE_ARRAY :
+                $value = $this->typeCaster->getArray($value);
+                break;
+            case Property::TYPE_BOOLEAN :
+                $value = $this->typeCaster->getBoolean($value);
+                break;
+            case Property::TYPE_DATETIME :
+                $value = $this->typeCaster->getDateTime($value);
+                break;
+            case Property::TYPE_INTEGER :
+                $value = $this->typeCaster->getInteger($value);
+                break;
+            case Property::TYPE_FLOAT :
+                $value = $this->typeCaster->getInteger($value);
+                break;
+            default :
+                throw new \InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));
+        }
+
+        return $value;
     }
 
     /**
@@ -117,22 +171,6 @@ class TransferObjectHydrator
         }
 
         return $body;
-    }
-
-    private function splitStringToArray(?string $props) : ?array
-    {
-        $data = [];
-
-        if (!$props) {
-            return null;
-        }
-
-        $properties = explode(',', $props);
-        foreach ($properties as $property) {
-            $data[] = trim($property);
-        }
-
-        return $data;
     }
 
     public function runOnObjectValidCallbacks()

@@ -39,6 +39,11 @@ class RequestHandler
      */
     private $providerFactory;
 
+    /**
+     * Same groups as in ValidatorInterface
+     */
+    private $validationGroups = null;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
@@ -105,7 +110,7 @@ class RequestHandler
         $entityHydrator = new EntityHydrator($this->entityManager);
         $entityHydrator->hydrate($transferObject, $entity);
 
-        $this->validateObject($entity);
+        $this->validateObject($entity, null, $this->validationGroups);
 
         return $entity;
     }
@@ -125,7 +130,7 @@ class RequestHandler
         $entityHydrator = new EntityHydrator($this->entityManager);
         $entityHydrator->hydrate($transferObject, $entity, !$request->isMethod('PATCH'));
 
-        $this->validateObject($entity);
+        $this->validateObject($entity, null, $this->validationGroups);
 
         return $entity;
     }
@@ -142,8 +147,9 @@ class RequestHandler
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
         $transferObjectHydrator->hydrate($request);
 
-        $this->validateObject($transferObject);
+        $this->validateObject($transferObject, null, $this->validationGroups);
         $transferObjectHydrator->runOnObjectValidCallbacks();
+        $transferObjectHydrator->castTypes();
 
         return $transferObject;
     }
@@ -157,14 +163,28 @@ class RequestHandler
     }
 
     /**
+     * @param $groups
+     *
+     * @return RequestHandler
+     */
+    public function setValidationGroups($groups) : self
+    {
+        $this->validationGroups = $groups;
+
+        return $this;
+    }
+
+    /**
      * @param $object
+     * @param null $constraints
+     * @param null $groups
      *
      * @return ConstraintViolationListInterface
      * @throws ValidationException
      */
-    public function validateObject($object) : ConstraintViolationListInterface
+    public function validateObject($object, $constraints = null, $groups = null) : ConstraintViolationListInterface
     {
-        $violations = $this->validator->validate($object);
+        $violations = $this->validator->validate($object, $constraints, $groups);
 
         if ($violations->count()) {
             throw new ValidationException($violations);

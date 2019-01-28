@@ -68,4 +68,25 @@ class MetaReaderTest extends TestCase
         $this->assertCount(1, $onObjectValid);
         $this->assertEquals('setNumber', $onObjectValid[0]->method);
     }
+
+    public function testProperty()
+    {
+        $class = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property(type="datetime")
+             */
+            public $foo;
+        };
+
+        $metaReader = new MetaReader($class);
+
+        $properties = $metaReader->getProperties();
+
+        $this->assertNotEmpty($properties);
+        $this->assertCount(1, $properties);
+        $this->assertEquals('datetime', $properties['foo']->type);
+        $this->assertEquals('foo', $properties['foo']->name);
+        $this->assertEquals(true, $properties['foo']->mapped);
+    }
 }

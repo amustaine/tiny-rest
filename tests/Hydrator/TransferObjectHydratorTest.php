@@ -155,4 +155,43 @@ class TransferObjectHydratorTest extends TestCase
         $this->assertEquals('John Doe', $transferObject->getFieldA());
         $this->assertNull($transferObject->getFieldB());
     }
+
+    public function testTypeCast()
+    {
+        $request = Request::create('localhost', 'GET', ['field' => '2016-05-15']);
+
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property(type="datetime")
+             */
+            public $field;
+        };
+
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->castTypes();
+
+        $this->assertTrue($transferObject->field instanceof \DateTime);
+        $this->assertEquals(new \DateTime('2016-05-15'), $transferObject->field);
+    }
+
+    public function testUnknownTypeCast()
+    {
+        $request = Request::create('localhost', 'GET', ['field' => 'abc']);
+
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property(type="superint")
+             */
+            public $field;
+        };
+
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate($request);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $transferObjectHydrator->castTypes();
+    }
 }

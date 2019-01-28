@@ -2,13 +2,10 @@
 
 namespace TinyRest\Hydrator;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use TinyRest\Annotations\Relation;
 use TinyRest\TransferObject\TransferObjectInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Id;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class EntityHydrator
@@ -54,7 +51,7 @@ class EntityHydrator
             if (null !== $value) {
                 if (!$entityMetadata->hasAssociation($annotation->column)) {
                     $fieldMapping = $entityMetadata->getFieldMapping($annotation->column);
-                    if (in_array($fieldMapping['type'], [
+                    if (is_string($value) && in_array($fieldMapping['type'], [
                         Type::DATE,
                         Type::DATE_IMMUTABLE,
                         Type::DATETIME,

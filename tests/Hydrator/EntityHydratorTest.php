@@ -101,4 +101,18 @@ class EntityHydratorTest extends DatabaseTestCase
         $this->assertEquals(\DateTime::class, get_class($user->getBirthDate()));
         $this->assertEquals('16101988', $user->getBirthDate()->format('dmY'));
     }
+
+    public function testWithDateTimeObject()
+    {
+        $transferObject            = new UserTransferObject();
+        $transferObject->birthDate = new \DateTime('10/16/1988');
+
+        $entityHydrator = new EntityHydrator($this->getEntityManager());
+
+        $user = new User();
+        $entityHydrator->hydrate($transferObject, $user);
+
+        $this->assertEquals(\DateTime::class, get_class($user->getBirthDate()));
+        $this->assertEquals('16101988', $user->getBirthDate()->format('dmY'));
+    }
 }
