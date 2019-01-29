@@ -2,6 +2,7 @@
 
 namespace TinyRest\Tests\Hydrator;
 
+use TinyRest\Annotations\Property;
 use TinyRest\Hydrator\EntityHydrator;
 use TinyRest\Tests\DatabaseTestCase;
 use TinyRest\Tests\Examples\DTO\AlbumTransferObject;
@@ -10,6 +11,7 @@ use TinyRest\Tests\Examples\Entity\Album;
 use TinyRest\Tests\Examples\Entity\Artist;
 use TinyRest\Tests\Examples\Entity\Cover;
 use TinyRest\Tests\Examples\Entity\User;
+use TinyRest\TransferObject\TransferObjectInterface;
 
 class EntityHydratorTest extends DatabaseTestCase
 {
@@ -114,5 +116,28 @@ class EntityHydratorTest extends DatabaseTestCase
 
         $this->assertEquals(\DateTime::class, get_class($user->getBirthDate()));
         $this->assertEquals('16101988', $user->getBirthDate()->format('dmY'));
+    }
+
+    public function testWithTimezone()
+    {
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property()
+             */
+            public $timestamp;
+        };
+
+        $transferObject->timestamp = '2019-01-30T18:00:00+0100';
+        $entityHydrator = new EntityHydrator($this->getEntityManager());
+
+        $user = new User();
+        $entityHydrator->hydrate($transferObject, $user);
+
+        $this->assertEquals(\DateTime::class, get_class($user->getTimestamp()));
+
+        $timestamp = $user->getTimestamp()->format(\DateTime::W3C);
+
+        $this->assertEquals('2019-01-30T17:00:00+00:00', $timestamp);
     }
 }

@@ -60,6 +60,13 @@ class User
     private $birthDate;
 
     /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     */
+    private $timestamp;
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -183,6 +190,26 @@ class User
     public function setBirthDate(\DateTime $birthDate) : User
     {
         $this->birthDate = $birthDate;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getTimestamp() : ?\DateTime
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * @param \DateTime|null $timestamp
+     *
+     * @return User
+     */
+    public function setTimestamp(?\DateTime $timestamp) : User
+    {
+        $this->timestamp = $timestamp;
 
         return $this;
     }

@@ -59,7 +59,7 @@ class EntityHydrator
                         Type::DATETIMETZ,
                         Type::DATETIMETZ_IMMUTABLE
                     ])) {
-                        $value = new \DateTime($value);
+                        $value = (new TypeCaster())->getDateTime($value);
                     }
                 } else {
                     $relation = $relations[$propertyName] ?? null;
