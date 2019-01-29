@@ -10,6 +10,4 @@ class Mapping
     public $column;
 
     public $mapped = true;
-
-    public $type = null;
 }

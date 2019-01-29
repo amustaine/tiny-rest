@@ -7,6 +7,7 @@ namespace TinyRest\Annotations;
  */
 class Property
 {
+    const TYPE_STRING   = 'string';
     const TYPE_ARRAY    = 'array';
     const TYPE_INTEGER  = 'integer';
     const TYPE_FLOAT    = 'float';

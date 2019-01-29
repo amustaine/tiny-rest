@@ -130,4 +130,14 @@ class TypeCasterTest extends TestCase
         $this->assertCount(1, $value);
         $this->assertEquals('A', $value[0]);
     }
+
+    public function testString()
+    {
+        $value = 15;
+
+        $value = (new TypeCaster())->getString($value);
+
+        $this->assertTrue(is_string($value));
+        $this->assertEquals('15', $value);
+    }
 }

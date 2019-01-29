@@ -66,4 +66,14 @@ class TypeCaster
     {
         return (float) $value;
     }
+
+    /**
+     * @param $value
+     *
+     * @return string
+     */
+    public function getString($value) : string
+    {
+        return (string) $value;
+    }
 }

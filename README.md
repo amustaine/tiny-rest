@@ -21,6 +21,80 @@ TinyRest\Pagination\PaginationFactory:
 TinyRest\RequestHandler:
 ```
 
+## Transfer Objects
+
+Transfer object is a tiny wrapper for HTTP request. The transfer object SHOULD NOT contain entities or convert some user data into complex custom objects. The general idea is having a validatable object which will contain pure user data
+
+### Annotation
+
+#### Property
+
+```
+@Property(name="foo", mapped=true, type="datetime")
+```
+
+`name` - By default the name equals to the name of the property but can be changed for the cases when there is manual mapping needed
+
+`mapped` - whether the value will be set to Transfer object or not. Default: *true*
+
+`type` - There are cases when the value should be casted to a certain type, for example using Transfer Object as filter in a repository. This types are available for type cast: `string`, `integer`, `float`, `array`, `datetime`, `boolean`. Default value is *string*
+
+#### Mapping
+
+The annotation should be used for describing the transfer strategy with the entity. By default the column name equals to the name of the property.
+The annotation cannot be used without `@Property()` annotation
+
+```
+@Mapping(column="someEntityField", mapped=true)
+```
+
+`column` - By default the name equals to the name of the property but can be changed for the cases when there is manual mapping needed
+
+`mapped` - Can be set as *false* for cases when the property should not transfer it's data to the entity. Default: *true*
+
+#### Events
+
+##### OnObjectHydrated
+
+```
+/**
+ * @OnObjectHydrated(method="setTimestamp")
+ */
+class SomeClass implements TransferObjectInterface
+{
+    private $timestamp;
+
+    public function setTimestamp()
+    {
+        $this->timestamp = time(); 
+    }
+}
+```
+
+Triggers after object hydration but before validation
+
+##### OnObjectValid
+
+```
+/**
+ * @OnObjectHydrated(callback={"OtherClass", "getRandomNumber"})
+ */
+class SomeClass implements TransferObjectInterface
+{
+    public $randomNumber;
+}
+
+class OtherClass
+{
+    public static function getRandomNumber(SomeClass $object)
+    {
+        $object->randomNumber = mt_rand(1, 10); 
+    }
+}
+```
+
+Triggers after object validation
+
 ## Usage
 
 ### Create, Update, List and Pagination

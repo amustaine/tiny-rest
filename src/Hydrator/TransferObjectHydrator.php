@@ -92,6 +92,9 @@ class TransferObjectHydrator
         }
 
         switch ($type) {
+            case Property::TYPE_STRING :
+                $value = $this->typeCaster->getString($value);
+                break;
             case Property::TYPE_ARRAY :
                 $value = $this->typeCaster->getArray($value);
                 break;
