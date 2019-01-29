@@ -67,6 +67,11 @@ class User
     private $timestamp;
 
     /**
+     * @var string|null
+     */
+    private $password;
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -210,6 +215,26 @@ class User
     public function setTimestamp(?\DateTime $timestamp) : User
     {
         $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPassword() : ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string|null $password
+     *
+     * @return User
+     */
+    public function setPassword(?string $password) : User
+    {
+        $this->password = $password;
 
         return $this;
     }

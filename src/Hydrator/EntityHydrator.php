@@ -48,28 +48,45 @@ class EntityHydrator
 
             $value = $propertyAccessor->getValue($transferObject, $propertyName);
 
-            if (null !== $value) {
-                if (!$entityMetadata->hasAssociation($annotation->column)) {
-                    $fieldMapping = $entityMetadata->getFieldMapping($annotation->column);
-                    if (is_string($value) && in_array($fieldMapping['type'], [
-                        Type::DATE,
-                        Type::DATE_IMMUTABLE,
-                        Type::DATETIME,
-                        Type::DATETIME_IMMUTABLE,
-                        Type::DATETIMETZ,
-                        Type::DATETIMETZ_IMMUTABLE
-                    ])) {
-                        $value = (new TypeCaster())->getDateTime($value);
-                    }
-                } else {
-                    $relation = $relations[$propertyName] ?? null;
-                    $byField  = $relation ? $relation->byField : $entityMetadata->getIdentifier()[0];
-                    $value    = $this->loadRelation($entityMetadata->getAssociationTargetClass($annotation->column), $byField, $value);
-                }
-
-                $propertyAccessor->setValue($entity, $annotation->column, $value);
+            if (null === $value) {
+                continue;
             }
+
+            if (!$entityMetadata->hasAssociation($annotation->column)) {
+                if ($entityMetadata->hasField($annotation->column)) {
+                    $fieldMapping = $entityMetadata->getFieldMapping($annotation->column);
+                    $value        = $this->castValue($value, $fieldMapping);
+                }
+            } else {
+                $relation = $relations[$propertyName] ?? null;
+                $byField  = $relation ? $relation->byField : $entityMetadata->getIdentifier()[0];
+                $value    = $this->loadRelation($entityMetadata->getAssociationTargetClass($annotation->column), $byField, $value);
+            }
+
+            $propertyAccessor->setValue($entity, $annotation->column, $value);
         }
+    }
+
+    /**
+     * @param $value
+     * @param array $fieldMapping
+     *
+     * @return \DateTime|null|mixed
+     */
+    private function castValue($value, array $fieldMapping)
+    {
+        if (is_string($value) && in_array($fieldMapping['type'], [
+                Type::DATE,
+                Type::DATE_IMMUTABLE,
+                Type::DATETIME,
+                Type::DATETIME_IMMUTABLE,
+                Type::DATETIMETZ,
+                Type::DATETIMETZ_IMMUTABLE
+            ])) {
+            $value = (new TypeCaster())->getDateTime($value);
+        }
+
+        return $value;
     }
 
     private function loadRelation(string $class, string $byField, $value)

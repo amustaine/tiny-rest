@@ -140,4 +140,23 @@ class EntityHydratorTest extends DatabaseTestCase
 
         $this->assertEquals('2019-01-30T17:00:00+00:00', $timestamp);
     }
+
+    public function testUnmappedSetters()
+    {
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property()
+             */
+            public $password;
+        };
+
+        $transferObject->password = 'strongPassword';
+        $entityHydrator = new EntityHydrator($this->getEntityManager());
+
+        $user = new User();
+        $entityHydrator->hydrate($transferObject, $user);
+
+        $this->assertEquals('strongPassword', $user->getPassword());
+    }
 }
