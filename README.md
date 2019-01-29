@@ -52,6 +52,15 @@ The annotation cannot be used without `@Property()` annotation
 
 `mapped` - Can be set as *false* for cases when the property should not transfer it's data to the entity. Default: *true*
 
+#### Relation
+```
+@Relation(byField="slug")
+```
+
+The `@Relation()` annotation is built for the cases when the plain value in the transfer object should be converted into relation entity.
+
+`byField` -  Default: *id*
+
 #### Events
 
 ##### OnObjectHydrated
