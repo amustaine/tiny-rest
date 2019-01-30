@@ -170,7 +170,6 @@ class TransferObjectHydratorTest extends TestCase
 
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
         $transferObjectHydrator->hydrate($request);
-        $transferObjectHydrator->castTypes();
 
         $this->assertTrue($transferObject->field instanceof \DateTime);
         $this->assertEquals(new \DateTime('2016-05-15'), $transferObject->field);
@@ -189,9 +188,9 @@ class TransferObjectHydratorTest extends TestCase
         };
 
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
 
         $this->expectException(\InvalidArgumentException::class);
-        $transferObjectHydrator->castTypes();
+        $transferObjectHydrator->hydrate($request);
+
     }
 }

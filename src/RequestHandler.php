@@ -149,7 +149,6 @@ class RequestHandler
 
         $this->validateObject($transferObject, null, $this->validationGroups);
         $transferObjectHydrator->runOnObjectValidCallbacks();
-        $transferObjectHydrator->castTypes();
 
         return $transferObject;
     }

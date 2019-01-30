@@ -51,7 +51,6 @@ class TransferObjectHydrator
     {
         $this->data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
 
-
         foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
             if (!$this->hasValue($annotation->name)) {
                 continue;
@@ -60,23 +59,15 @@ class TransferObjectHydrator
             $value = $this->getValue($annotation->name);
 
             if ($annotation->mapped) {
+                if ($annotation->type) {
+                    $value = $this->castType($annotation->type, $value);
+                }
+
                 $this->propertyAccessor->setValue($this->transferObject, $propertyName, $value);
             }
         }
 
         $this->runCallbacks($this->metaReader->getOnObjectHydratedAnnotations());
-    }
-
-    public function castTypes()
-    {
-        foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
-            if (!$annotation->type || !$annotation->mapped) {
-                continue;
-            }
-
-            $value = $this->castType($annotation->type, $this->getValue($annotation->name));
-            $this->propertyAccessor->setValue($this->transferObject, $propertyName, $value);
-        }
     }
 
     /**
