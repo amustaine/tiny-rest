@@ -99,7 +99,7 @@ class TransferObjectHydrator
                 $value = $this->typeCaster->getInteger($value);
                 break;
             case Property::TYPE_FLOAT :
-                $value = $this->typeCaster->getInteger($value);
+                $value = $this->typeCaster->getFloat($value);
                 break;
             default :
                 throw new \InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));

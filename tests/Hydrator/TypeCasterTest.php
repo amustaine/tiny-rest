@@ -24,10 +24,10 @@ class TypeCasterTest extends TestCase
 
     public function testFloat()
     {
-        $value = (new TypeCaster())->getFloat('25');
+        $value = (new TypeCaster())->getFloat('25.15');
 
         $this->assertTrue(is_float($value));
-        $this->assertEquals(25, $value);
+        $this->assertEquals(25.15, $value);
     }
 
     public function testFloatWithInvalidString()

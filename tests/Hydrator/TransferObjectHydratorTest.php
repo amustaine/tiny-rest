@@ -158,21 +158,56 @@ class TransferObjectHydratorTest extends TestCase
 
     public function testTypeCast()
     {
-        $request = Request::create('localhost', 'GET', ['field' => '2016-05-15']);
+        $request = Request::create('localhost', 'GET', [
+                'integer'  => '28',
+                'float'    => '16.3',
+                'string'   => '11',
+                'array'    => 'a,b,c,d, e',
+                'datetime' => '2016-05-15'
+            ]
+        );
 
         $transferObject = new class implements TransferObjectInterface
         {
             /**
+             * @Property(type="integer")
+             */
+            public $integer;
+
+            /**
+             * @Property(type="float")
+             */
+            public $float;
+
+            /**
+             * @Property(type="string")
+             */
+            public $string;
+
+            /**
+             * @Property(type="array")
+             */
+            public $array;
+
+            /**
              * @Property(type="datetime")
              */
-            public $field;
+            public $datetime;
         };
 
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
         $transferObjectHydrator->hydrate($request);
 
-        $this->assertTrue($transferObject->field instanceof \DateTime);
-        $this->assertEquals(new \DateTime('2016-05-15'), $transferObject->field);
+        $this->assertTrue(28 === $transferObject->integer);
+        $this->assertTrue(16.3 === $transferObject->float);
+        $this->assertTrue('11' === $transferObject->string);
+
+        $this->assertTrue(is_array($transferObject->array));
+        $this->assertCount(5, $transferObject->array);
+        $this->assertEquals('c', $transferObject->array[2]);
+
+        $this->assertTrue($transferObject->datetime instanceof \DateTime);
+        $this->assertEquals(new \DateTime('2016-05-15'), $transferObject->datetime);
     }
 
     public function testUnknownTypeCast()
@@ -191,6 +226,5 @@ class TransferObjectHydratorTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $transferObjectHydrator->hydrate($request);
-
     }
 }
