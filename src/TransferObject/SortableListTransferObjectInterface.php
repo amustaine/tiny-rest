@@ -9,6 +9,4 @@ interface SortableListTransferObjectInterface
     public function getSortDir() : ?string;
 
     public function getAllowedToSort() : array;
-
-    public function isAllowedToSort() : bool;
 }

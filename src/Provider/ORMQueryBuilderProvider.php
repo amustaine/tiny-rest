@@ -4,6 +4,8 @@ namespace TinyRest\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use TinyRest\Sort\SortField;
+use TinyRest\Sort\SortHelper;
 use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -49,8 +51,11 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
 
     protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
     {
-        if ($transferObject->isAllowedToSort()) {
-            $queryBuilder->addOrderBy($transferObject->getSort(), $transferObject->getSortDir());
+        if (!SortHelper::isAllowedToSort($transferObject->getAllowedToSort(), $transferObject->getSort())) {
+            return;
         }
+
+        $field = SortHelper::getSortField($transferObject->getAllowedToSort(), $transferObject->getSort());
+        $queryBuilder->addOrderBy($field, $transferObject->getSortDir());
     }
 }

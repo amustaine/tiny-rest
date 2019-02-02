@@ -8,6 +8,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use TinyRest\Provider\NativeQueryProvider;
 use TinyRest\QueryBuilder\NativeQueryBuilder;
 use TinyRest\Tests\DatabaseTestCase;
+use TinyRest\Tests\Examples\DTO\ProductTransferObject;
 use TinyRest\Tests\Examples\Entity\Song;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -15,7 +16,7 @@ class NativeQueryProviderTest extends DatabaseTestCase
 {
     public function testProvide()
     {
-        $qb = $this->createProvider()->provide($this->createTransferObject());
+        $qb = $this->createProvider()->provide(new ProductTransferObject());
 
         $this->assertTrue($qb instanceof NativeQueryBuilder);
     }
@@ -23,12 +24,25 @@ class NativeQueryProviderTest extends DatabaseTestCase
     public function testToArray()
     {
         $class = $this->createProvider();
-        $data  = $class->toArray($this->createTransferObject());
+        $data  = $class->toArray(new ProductTransferObject());
 
         $this->assertTrue(is_array($data));
         $this->assertNotEmpty($data);
         $this->assertCount(4, $data);
         $this->assertTrue($data[0] instanceof Song);
+    }
+
+    public function testSort()
+    {
+        $transferObject = new ProductTransferObject();
+        $transferObject->setSort('weight');
+        $transferObject->setSortDir('desc');
+
+        $qb = $this->createProvider()->provide($transferObject);
+        $sort = $qb->getQueryBuilder()->getQueryPart('orderBy');
+
+        $this->assertArrayHasKey(0, $sort);
+        $this->assertEquals('p.weight desc', strtolower($sort[0]));
     }
 
     /**
@@ -55,16 +69,6 @@ class NativeQueryProviderTest extends DatabaseTestCase
 
                 return $qb;
             }
-        };
-    }
-
-    /**
-     * @return TransferObjectInterface
-     */
-    private function createTransferObject() : TransferObjectInterface
-    {
-        return new class implements TransferObjectInterface
-        {
         };
     }
 }

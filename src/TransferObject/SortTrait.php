@@ -51,13 +51,4 @@ trait SortTrait
     {
         $this->sortDir = $sortDir;
     }
-
-    /**
-     * @return bool
-     */
-    public function isAllowedToSort() : bool
-    {
-        return $this->getSort() && in_array($this->getSort(), $this->getAllowedToSort());
-    }
-
 }

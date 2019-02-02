@@ -2,9 +2,11 @@
 
 namespace TinyRest\Tests\Provider;
 
+use Doctrine\ORM\Query\Expr\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use TinyRest\Provider\ORMQueryBuilderProvider;
 use TinyRest\Tests\DatabaseTestCase;
+use TinyRest\Tests\Examples\DTO\ProductTransferObject;
 use TinyRest\Tests\Examples\Entity\Song;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -26,6 +28,25 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
         $this->assertNotEmpty($data);
         $this->assertCount(4, $data);
         $this->assertTrue($data[0] instanceof Song);
+    }
+
+    public function testSort()
+    {
+        $transferObject = new ProductTransferObject();
+        $transferObject->setSort('weight');
+        $qb = $this->createProvider()->provide($transferObject);
+
+        $sort = $qb->getDQLPart('orderBy');
+
+        $this->assertArrayHasKey(0, $sort);
+
+        /**
+         * @var OrderBy $sortVal
+         */
+        $sortVal = $sort[0];
+
+        $this->assertEquals(OrderBy::class, get_class($sortVal));
+        $this->assertEquals('p.weight ASC', $sortVal->getParts()[0]);
     }
 
     /**

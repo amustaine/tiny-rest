@@ -6,6 +6,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use TinyRest\QueryBuilder\NativeQueryBuilder;
+use TinyRest\Sort\SortHelper;
 use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -79,8 +80,11 @@ abstract class NativeQueryProvider implements ProviderInterface
 
     protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
     {
-        if ($transferObject->isAllowedToSort()) {
-            $queryBuilder->addOrderBy($transferObject->getSort(), $transferObject->getSortDir());
+        if (!SortHelper::isAllowedToSort($transferObject->getAllowedToSort(), $transferObject->getSort())) {
+            return;
         }
+
+        $field = SortHelper::getSortField($transferObject->getAllowedToSort(), $transferObject->getSort());
+        $queryBuilder->addOrderBy($field, $transferObject->getSortDir());
     }
 }
