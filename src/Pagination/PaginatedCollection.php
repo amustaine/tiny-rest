@@ -113,4 +113,17 @@ class PaginatedCollection
 
         return $links;
     }
+
+    /**
+     * @return array
+     */
+    public function normalize() : array
+    {
+        return [
+            'total'   => $this->getTotal(),
+            'perPage' => $this->getPerPage(),
+            'data'    => $this->getData(),
+            'links'   => $this->getLinks()
+        ];
+    }
 }
