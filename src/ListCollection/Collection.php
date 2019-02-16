@@ -35,4 +35,15 @@ class Collection
     {
         return $this->data;
     }
+
+    /**
+     * @return array
+     */
+    public function normalize() : array
+    {
+        return [
+            'total'   => $this->getTotal(),
+            'data'    => $this->getData()
+        ];
+    }
 }
