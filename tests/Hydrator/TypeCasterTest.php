@@ -120,6 +120,16 @@ class TypeCasterTest extends TestCase
         $this->assertEquals('B%dAf;', $value[1]);
     }
 
+    public function testArrayWithEmptyString()
+    {
+        $value = '';
+
+        $value = (new TypeCaster())->getArray($value);
+
+        $this->assertTrue(is_array($value));
+        $this->assertCount(0, $value);
+    }
+
     public function testWithOneElement()
     {
         $value = 'A';

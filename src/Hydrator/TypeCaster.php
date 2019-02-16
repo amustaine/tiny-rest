@@ -23,6 +23,10 @@ class TypeCaster
     {
         $data = [];
 
+        if (empty($value)) {
+            return [];
+        }
+
         $properties = explode(',', $value);
         foreach ($properties as $property) {
             $data[] = trim($property);
