@@ -54,6 +54,14 @@ class PaginationFactory
     }
 
     /**
+     * @return PaginatedCollection
+     */
+    public function createEmptyCollection() : PaginatedCollection
+    {
+        return new PaginatedCollection(new Pagerfanta(new ArrayAdapter([])), $this->getRouteBuilder());
+    }
+
+    /**
      * @param $dataProvider
      *
      * @return AdapterInterface
