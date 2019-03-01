@@ -85,6 +85,6 @@ abstract class NativeQueryProvider implements ProviderInterface
         }
 
         $field = SortHelper::getSortField($transferObject->getAllowedToSort(), $transferObject->getSort());
-        $queryBuilder->addOrderBy($field, $transferObject->getSortDir());
+        $queryBuilder->addOrderBy($field, SortHelper::getSortDir($transferObject->getSortDir()));
     }
 }

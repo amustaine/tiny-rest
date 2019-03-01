@@ -46,7 +46,7 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
         $sortVal = $sort[0];
 
         $this->assertEquals(OrderBy::class, get_class($sortVal));
-        $this->assertEquals('p.weight ASC', $sortVal->getParts()[0]);
+        $this->assertEquals('p.weight asc', $sortVal->getParts()[0]);
     }
 
     /**

@@ -45,4 +45,14 @@ class SortHelper
 
         return $value;
     }
+
+    /**
+     * @param string|null $dir
+     *
+     * @return string
+     */
+    public static function getSortDir(?string $dir) : string
+    {
+        return strtolower($dir) === 'desc' ? 'desc' : 'asc';
+    }
 }

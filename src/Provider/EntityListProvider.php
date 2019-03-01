@@ -78,6 +78,6 @@ class EntityListProvider implements ProviderInterface
             $field = 'c.' . $field;
         }
 
-        $queryBuilder->addOrderBy($field, $transferObject->getSortDir());
+        $queryBuilder->addOrderBy($field, SortHelper::getSortDir($transferObject->getSortDir()));
     }
 }
