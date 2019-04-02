@@ -107,7 +107,8 @@ class PaginationFactory
     {
         $request     = $this->requestStack->getCurrentRequest();
         $routeName   = $request->get('_route');
-        $routeParams = $request->query->all();
+        $queryParams = $request->query->all();
+        $routeParams = array_merge($request->attributes->get('_route_params') ?? [], $queryParams);
         unset($routeParams['page']);
 
         $routeBuilder = function ($pageNumber) use ($routeName, $routeParams) {
