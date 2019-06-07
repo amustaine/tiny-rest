@@ -42,14 +42,26 @@ class TransferObjectHydrator
         $this->typeCaster       = new TypeCaster();
     }
 
-    /**
-     * @param Request $request
-     *
-     * @throws \Exception
-     */
-    public function hydrate(Request $request)
+    public function handleRequest(Request $request)
     {
-        $this->data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
+        $data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
+
+        $this->hydrate($data);
+    }
+
+    /**
+     * @param $data
+     */
+    public function hydrate($data) : void
+    {
+        if ($data instanceof Request) {
+            trigger_error('Passing Request object in hydrate() is deprecated and will be removed in version 2.0 use handleRequest() instead', E_USER_DEPRECATED);
+
+            $this->handleRequest($data);
+            return;
+        }
+
+        $this->data = $data;
 
         foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
             if (!$this->hasValue($annotation->name)) {
@@ -74,7 +86,7 @@ class TransferObjectHydrator
      * @param string $type
      * @param $value
      *
-     * @return array|bool|\DateTime|null
+     * @return array|bool|\DateTime|null|object
      */
     private function castType(string $type, $value)
     {
@@ -102,7 +114,14 @@ class TransferObjectHydrator
                 $value = $this->typeCaster->getFloat($value);
                 break;
             default :
-                throw new \InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));
+                if (class_exists($type)) {
+                    $transferObject = new $type;
+                    (new TransferObjectHydrator($transferObject))->hydrate($value);
+
+                    $value = $transferObject;
+                } else {
+                    throw new \InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));
+                }
         }
 
         return $value;

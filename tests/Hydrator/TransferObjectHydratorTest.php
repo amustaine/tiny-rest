@@ -16,7 +16,7 @@ class TransferObjectHydratorTest extends TestCase
         $request = Request::create('localhost', 'POST', [], [], [], [], json_encode([]));
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertNotEmpty($transferObject);
     }
@@ -28,7 +28,7 @@ class TransferObjectHydratorTest extends TestCase
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
 
         $this->expectExceptionMessage('Invalid JSON');
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
     }
 
     public function testWithGet()
@@ -37,7 +37,7 @@ class TransferObjectHydratorTest extends TestCase
 
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals('John Doe', $transferObject->name);
     }
@@ -49,7 +49,7 @@ class TransferObjectHydratorTest extends TestCase
 
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals('John Doe', $transferObject->name);
     }
@@ -59,7 +59,7 @@ class TransferObjectHydratorTest extends TestCase
         $request                = Request::create('localhost', 'GET', ['user_name' => 'John']);
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals('John', $transferObject->userName);
     }
@@ -73,7 +73,7 @@ class TransferObjectHydratorTest extends TestCase
         ]);
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals('Actor', $transferObject->lifeStyle);
         $this->assertEquals('John Doe', $transferObject->name);
@@ -89,7 +89,7 @@ class TransferObjectHydratorTest extends TestCase
 
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals('John', $transferObject->firstName);
         $this->assertEquals('Doe', $transferObject->lastName);
@@ -104,7 +104,7 @@ class TransferObjectHydratorTest extends TestCase
 
         $transferObject         = new UserTransferObject();
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals(date('Ymd'), $transferObject->date);
     }
@@ -150,7 +150,7 @@ class TransferObjectHydratorTest extends TestCase
         };
 
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertEquals('John Doe', $transferObject->getFieldA());
         $this->assertNull($transferObject->getFieldB());
@@ -196,7 +196,7 @@ class TransferObjectHydratorTest extends TestCase
         };
 
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
 
         $this->assertTrue(28 === $transferObject->integer);
         $this->assertTrue(16.3 === $transferObject->float);
@@ -225,6 +225,62 @@ class TransferObjectHydratorTest extends TestCase
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
 
         $this->expectException(\InvalidArgumentException::class);
-        $transferObjectHydrator->hydrate($request);
+        $transferObjectHydrator->handleRequest($request);
     }
+
+    public function testHydrateWithArray()
+    {
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property()
+             */
+            public $fieldA;
+
+            /**
+             * @Property()
+             */
+            public $fieldB;
+        };
+
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate([
+            'fieldA' => 'Foo',
+            'fieldB' => 'Bar'
+        ]);
+
+        $this->assertEquals('Foo', $transferObject->fieldA);
+        $this->assertEquals('Bar', $transferObject->fieldB);
+    }
+
+    public function testNestedObjects()
+    {
+        $transferObject = new class implements TransferObjectInterface
+        {
+            /**
+             * @Property()
+             */
+            public $fieldA;
+
+            /**
+             * @var UserTransferObject
+             *
+             * @Property(type="TinyRest\Tests\Examples\DTO\UserTransferObject")
+             */
+            public $user;
+        };
+
+        $transferObjectHydrator = new TransferObjectHydrator($transferObject);
+        $transferObjectHydrator->hydrate([
+            'fieldA' => 'Foo',
+            'user' => [
+                'user_name' => 'John Doe'
+            ]
+        ]);
+
+        $this->assertEquals('Foo', $transferObject->fieldA);
+        $this->assertEquals(UserTransferObject::class, get_class($transferObject->user));
+        $this->assertEquals('John Doe', $transferObject->user->userName);
+    }
+
 }
