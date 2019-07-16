@@ -200,3 +200,8 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
 
 WARNING: This project is currently in aplha stage, which means minimal risk of BC does exist.
+
+
+
+#### Do you like the project? Smash the star button, this will motivate me to make it even better!
+
