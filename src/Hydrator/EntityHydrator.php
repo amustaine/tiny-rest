@@ -21,18 +21,28 @@ class EntityHydrator
     }
 
     /**
-     * @param TransferObjectInterface $transferObject
+     * @param ObjectMetaInterface $objectMeta
      * @param object $entity
      * @param bool|null $clearFields
      */
-    public function hydrate(TransferObjectInterface $transferObject, $entity, ?bool $clearFields = false)
+    public function hydrate($objectMeta, $entity, ?bool $clearFields = false)
     {
+        if (!$objectMeta instanceof ObjectMetaInterface) {
+
+            if (!$objectMeta instanceof TransferObjectInterface) {
+                throw new \InvalidArgumentException(sprintf('Unsupported object given: %s', get_class($objectMeta)));
+            }
+
+            $objectMeta = (new MetaReader($objectMeta))->getObjectMeta();
+
+            trigger_error('Passing TransferObjectInterface in hydrate() is deprecated and will be disabled in version 2.0, use ObjectMetaInterface instead', E_USER_DEPRECATED);
+        }
+
         if (!is_object($entity)) {
             throw new \InvalidArgumentException('$entity should be a doctrine Entity object class');
         }
 
-        $metaReader = new MetaReader($transferObject);
-        $relations  = $metaReader->getRelations();
+        $relations = $objectMeta->getRelations();
 
         $propertyAccessor = new PropertyAccessor();
         $entityMetadata   = $this->entityManager->getClassMetadata(get_class($entity));
@@ -41,12 +51,12 @@ class EntityHydrator
             $this->clearFields($entity, $entityMetadata);
         }
 
-        foreach ($metaReader->getMapping() as $propertyName => $annotation) {
+        foreach ($objectMeta->getMapping() as $propertyName => $annotation) {
             if (!$annotation->mapped) {
                 continue;
             }
 
-            $value = $propertyAccessor->getValue($transferObject, $propertyName);
+            $value = $propertyAccessor->getValue($objectMeta->getData(), $propertyName);
 
             if (null === $value) {
                 continue;

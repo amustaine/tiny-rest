@@ -72,6 +72,13 @@ class User
     private $password;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", name="is_active")
+     */
+    private $active;
+
+    /**
      * @return int
      */
     public function getId() : int
@@ -235,6 +242,26 @@ class User
     public function setPassword(?string $password) : User
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive() : bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     *
+     * @return User
+     */
+    public function setActive(bool $active) : User
+    {
+        $this->active = $active;
 
         return $this;
     }

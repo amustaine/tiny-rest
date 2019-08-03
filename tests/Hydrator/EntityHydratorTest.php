@@ -3,6 +3,7 @@
 namespace TinyRest\Tests\Hydrator;
 
 use TinyRest\Annotations\Property;
+use TinyRest\Converter\EntityConverter;
 use TinyRest\Hydrator\EntityHydrator;
 use TinyRest\Tests\DatabaseTestCase;
 use TinyRest\Tests\Examples\DTO\AlbumTransferObject;
@@ -129,7 +130,7 @@ class EntityHydratorTest extends DatabaseTestCase
         };
 
         $transferObject->timestamp = '2019-01-30T18:00:00+0100';
-        $entityHydrator = new EntityHydrator($this->getEntityManager());
+        $entityHydrator            = new EntityHydrator($this->getEntityManager());
 
         $user = new User();
         $entityHydrator->hydrate($transferObject, $user);
@@ -152,11 +153,32 @@ class EntityHydratorTest extends DatabaseTestCase
         };
 
         $transferObject->password = 'strongPassword';
-        $entityHydrator = new EntityHydrator($this->getEntityManager());
+        $entityHydrator           = new EntityHydrator($this->getEntityManager());
 
         $user = new User();
         $entityHydrator->hydrate($transferObject, $user);
 
         $this->assertEquals('strongPassword', $user->getPassword());
+    }
+
+    public function testEntityConverter()
+    {
+        $data = [
+            'name'        => 'Otto',
+            'dateOfBirth' => '2020-10-25',
+            'years'       => 16,
+            'active'      => true,
+            'randomField' => 'Hello World',
+            'tmpField'    => '!secret!',
+        ];
+
+        $entityConverter = new EntityConverter($this->getEntityManager());
+        $entityHydrator  = new EntityHydrator($this->getEntityManager());
+
+        $album = new Album();
+        $entityHydrator->hydrate($entityConverter->createObjectMetaFromEntity(Album::class, $data), $album);
+
+        $this->assertEquals($data['name'], $album->getName());
+        $this->assertEquals($data['tmpField'], $album->getTmpField());
     }
 }

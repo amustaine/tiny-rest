@@ -6,6 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use TinyRest\Annotations\Property;
 use TinyRest\TransferObject\TransferObjectInterface;
+use Exception;
+use InvalidArgumentException;
 
 class TransferObjectHydrator
 {
@@ -63,7 +65,7 @@ class TransferObjectHydrator
 
         $this->data = $data;
 
-        foreach ($this->metaReader->getProperties() as $propertyName => $annotation) {
+        foreach ($this->metaReader->getObjectMeta()->getProperties() as $propertyName => $annotation) {
             if (!$this->hasValue($annotation->name)) {
                 continue;
             }
@@ -120,7 +122,7 @@ class TransferObjectHydrator
 
                     $value = $transferObject;
                 } else {
-                    throw new \InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));
+                    throw new InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));
                 }
         }
 
@@ -130,17 +132,17 @@ class TransferObjectHydrator
     /**
      * @param array $callbacks
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function runCallbacks(array $callbacks)
     {
         foreach ($callbacks as $event) {
             if (!empty($event->method)) {
-                [$this->transferObject, $event->method]();
+                ([$this->transferObject, $event->method])();
             } elseif (is_callable($event->callback)) {
                 ($event->callback)($this->transferObject);
             } else {
-                throw new \Exception('Invalid callback');
+                throw new Exception('Invalid callback');
             }
         }
     }
@@ -169,7 +171,7 @@ class TransferObjectHydrator
      * @param Request $request
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function getBody(Request $request) : array
     {
@@ -180,7 +182,7 @@ class TransferObjectHydrator
         $body = json_decode($request->getContent(), true);
 
         if (json_last_error()) {
-            throw new \Exception('Invalid JSON');
+            throw new Exception('Invalid JSON');
         }
 
         return $body;

@@ -32,6 +32,11 @@ class MetaReader
 
     private $onObjectValid = [];
 
+    /**
+     * @var ObjectMeta
+     */
+    private $objectMeta;
+
     public function __construct(TransferObjectInterface $transferObject)
     {
         $this->annotationReader = new AnnotationReader();
@@ -39,6 +44,8 @@ class MetaReader
 
         $this->handleClassAnnotations();
         $this->handlePropertyAnnotations();
+
+        $this->objectMeta = new ObjectMeta($this->properties, $this->relations, $this->mapping, $transferObject);
     }
 
     private function handleClassAnnotations()
@@ -93,28 +100,9 @@ class MetaReader
         }
     }
 
-    /**
-     * @return Property[]
-     */
-    public function getProperties() : array
+    public function getObjectMeta() : ObjectMeta
     {
-        return $this->properties;
-    }
-
-    /**
-     * @return Relation[]
-     */
-    public function getRelations() : array
-    {
-        return $this->relations;
-    }
-
-    /**
-     * @return Mapping[]
-     */
-    public function getMapping() : array
-    {
-        return $this->mapping;
+        return $this->objectMeta;
     }
 
     /**

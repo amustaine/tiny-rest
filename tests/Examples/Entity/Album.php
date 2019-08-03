@@ -47,6 +47,8 @@ class Album
      */
     private $createdAt;
 
+    private $tmpField = 'Hello!';
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -136,6 +138,26 @@ class Album
     public function setCover(Cover $cover) : Album
     {
         $this->cover = $cover;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTmpField() : string
+    {
+        return $this->tmpField;
+    }
+
+    /**
+     * @param string $tmpField
+     *
+     * @return Album
+     */
+    public function setTmpField(string $tmpField) : Album
+    {
+        $this->tmpField = $tmpField;
 
         return $this;
     }

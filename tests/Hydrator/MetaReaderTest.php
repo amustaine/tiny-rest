@@ -25,7 +25,7 @@ class MetaReaderTest extends TestCase
 
         $metaReader = new MetaReader($class);
 
-        $relations = $metaReader->getRelations();
+        $relations = $metaReader->getObjectMeta()->getRelations();
 
         $this->assertNotEmpty($relations);
         $this->assertCount(1, $relations);
@@ -52,7 +52,7 @@ class MetaReaderTest extends TestCase
 
         $metaReader = new MetaReader($class);
 
-        $mapping = $metaReader->getMapping();
+        $mapping = $metaReader->getObjectMeta()->getMapping();
 
         $this->assertNotEmpty($mapping);
         $this->assertCount(1, $mapping);
@@ -81,7 +81,7 @@ class MetaReaderTest extends TestCase
 
         $metaReader = new MetaReader($class);
 
-        $properties = $metaReader->getProperties();
+        $properties = $metaReader->getObjectMeta()->getProperties();
 
         $this->assertNotEmpty($properties);
         $this->assertCount(1, $properties);
