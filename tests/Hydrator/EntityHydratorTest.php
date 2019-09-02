@@ -176,7 +176,8 @@ class EntityHydratorTest extends DatabaseTestCase
         $entityHydrator  = new EntityHydrator($this->getEntityManager());
 
         $album = new Album();
-        $entityHydrator->hydrate($entityConverter->createObjectMetaFromEntity(Album::class, $data), $album);
+        $objectMeta = $entityConverter->createObjectMetaFromEntity(Album::class, $data);
+        $entityHydrator->hydrate($objectMeta, $album);
 
         $this->assertEquals($data['name'], $album->getName());
         $this->assertEquals($data['tmpField'], $album->getTmpField());

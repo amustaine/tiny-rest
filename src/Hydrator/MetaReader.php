@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DataTables Backend package.
+ *
+ * (c) TinyRest <https://github.com/RuSS-B/tiny-rest>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace TinyRest\Hydrator;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -10,6 +19,9 @@ use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
 use TinyRest\TransferObject\TransferObjectInterface;
 
+/**
+ *  @author Russ Balabanov <russ.developer@gmail.com>
+ */
 class MetaReader
 {
     /**

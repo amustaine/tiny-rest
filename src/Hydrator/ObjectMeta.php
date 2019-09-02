@@ -1,7 +1,19 @@
 <?php
 
+/*
+ * This file is part of the DataTables Backend package.
+ *
+ * (c) TinyRest <https://github.com/RuSS-B/tiny-rest>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace TinyRest\Hydrator;
 
+/**
+ *  @author Russ Balabanov <russ.developer@gmail.com>
+ */
 class ObjectMeta implements ObjectMetaInterface
 {
     /**

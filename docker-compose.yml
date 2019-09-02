@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+  php:
+    build:
+      context: ./provision/php
+    working_dir: /app
+    args:
+      TIMEZONE: Europe/Amsterdam
+    environment:
+      - PHP_IDE_CONFIG=serverName=tiny_rest
+
+    volumes:
+      - .:/app

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the DataTables Backend package.
+ *
+ * (c) TinyRest <https://github.com/RuSS-B/tiny-rest>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace TinyRest\Hydrator;
 
 use Doctrine\DBAL\Types\Type;
@@ -8,6 +17,9 @@ use TinyRest\TransferObject\TransferObjectInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
+/**
+ *  @author Russ Balabanov <russ.developer@gmail.com>
+ */
 class EntityHydrator
 {
     /**
@@ -56,7 +68,14 @@ class EntityHydrator
                 continue;
             }
 
-            $value = $propertyAccessor->getValue($objectMeta->getData(), $propertyName);
+            $data = $objectMeta->getData();
+
+            //@todo the $data should be always as array
+            if (is_array($data)) {
+                $value = $data[$propertyName] ?? null;
+            } else {
+                $value = $propertyAccessor->getValue($objectMeta->getData(), $propertyName);
+            }
 
             if (null === $value) {
                 continue;
