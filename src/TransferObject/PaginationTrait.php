@@ -14,6 +14,7 @@ trait PaginationTrait
     private $page;
 
     /**
+     * @Assert\Range(min="0")
      * @Assert\Regex("/\d+/")
      * @Property()
      */
