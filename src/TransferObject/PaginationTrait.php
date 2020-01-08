@@ -9,14 +9,14 @@ trait PaginationTrait
 {
     /**
      * @Assert\Range(min="1")
-     * @Property()
+     * @Property(type="integer")
      */
     private $page;
 
     /**
      * @Assert\Range(min="0")
      * @Assert\Regex("/\d+/")
-     * @Property()
+     * @Property(type="integer")
      */
     private $pageSize;
 
