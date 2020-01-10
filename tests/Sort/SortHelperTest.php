@@ -2,11 +2,11 @@
 
 namespace TinyRest\Tests\Sort;
 
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use TinyRest\Sort\SortField;
 use TinyRest\Sort\SortHelper;
 
-class SortHelperTest extends TestCase
+class SortHelperTest extends KernelTestCase
 {
     /**
      * @param string $sort

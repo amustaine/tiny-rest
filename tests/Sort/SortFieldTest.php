@@ -2,9 +2,9 @@
 
 namespace TinyRest\Sort;
 
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class SortFieldTest extends TestCase
+class SortFieldTest extends KernelTestCase
 {
     public function testGetFieldByAliasWithOneAliases()
     {

@@ -5,6 +5,9 @@ namespace TinyRest\TransferObject;
 use Symfony\Component\Validator\Constraints as Assert;
 use TinyRest\Annotations\Property;
 
+/**
+ * @deprecated since 1.3, will be removed in 2.0
+ */
 trait PaginationTrait
 {
     /**

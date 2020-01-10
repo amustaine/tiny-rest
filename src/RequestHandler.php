@@ -58,7 +58,7 @@ class RequestHandler
 
     /**
      * @param Request $request
-     * @param PaginatedListTransferObjectInterface $transferObject
+     * @param object $transferObject
      * @param ProviderInterface $dataProvider
      *
      * @return PaginatedCollection
@@ -66,7 +66,7 @@ class RequestHandler
      */
     public function getPaginatedList(
         Request $request,
-        PaginatedListTransferObjectInterface $transferObject,
+        object $transferObject,
         ProviderInterface $dataProvider
     ) : PaginatedCollection
     {
