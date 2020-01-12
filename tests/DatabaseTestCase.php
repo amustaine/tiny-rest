@@ -2,7 +2,6 @@
 
 namespace TinyRest\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -12,8 +11,9 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class DatabaseTestCase extends TestCase
+class DatabaseTestCase extends KernelTestCase
 {
     public function getEntityManager()
     {
@@ -37,7 +37,7 @@ class DatabaseTestCase extends TestCase
         return EntityManager::create($params, $config);
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $em = $this->getEntityManager();
 

@@ -2,19 +2,14 @@
 
 namespace TinyRest\Provider;
 
-use TinyRest\TransferObject\TransferObjectInterface;
-
 abstract class ArrayProvider implements ProviderInterface
 {
-    /**
-     * @param TransferObjectInterface|null $transferObject
-     *
-     * @return array
-     */
-    abstract public function provide(TransferObjectInterface $transferObject) : array;
+    use SortTrait, FilterTrait;
 
-    public function toArray(TransferObjectInterface $transferObject)
+    abstract public function provide(): array;
+
+    public function toArray(): array
     {
-        return $this->provide($transferObject);
+        return $this->provide();
     }
 }

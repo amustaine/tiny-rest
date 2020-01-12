@@ -6,6 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use TinyRest\Model\PaginationModel;
+use TinyRest\Model\SortModel;
 use TinyRest\Provider\ProviderInterface;
 use TinyRest\ListCollection\Collection;
 use TinyRest\Exception\ValidationException;
@@ -14,7 +16,8 @@ use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Pagination\PaginatedCollection;
 use TinyRest\Pagination\PaginationFactory;
 use TinyRest\Provider\ProviderFactory;
-use TinyRest\TransferObject\PaginatedListTransferObjectInterface;
+use TinyRest\Sort\SortField;
+use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 class RequestHandler
@@ -58,21 +61,38 @@ class RequestHandler
 
     /**
      * @param Request $request
-     * @param PaginatedListTransferObjectInterface $transferObject
+     * @param object|null $transferObject
      * @param ProviderInterface $dataProvider
+     * @param SortField[] $sortFields
      *
      * @return PaginatedCollection
-     * @throws ValidationException
      */
     public function getPaginatedList(
         Request $request,
-        PaginatedListTransferObjectInterface $transferObject,
-        ProviderInterface $dataProvider
-    ) : PaginatedCollection
+        ?object $transferObject,
+        ProviderInterface $dataProvider,
+        array $sortFields = []
+    ): PaginatedCollection
     {
-        $this->handleTransferObject($request, $transferObject);
+        if ($transferObject) {
+            $this->handleTransferObject($request, $transferObject);
+            $dataProvider->setFilter($transferObject);
 
-        return $this->paginationFactory->createCollection($transferObject, $dataProvider);
+            if (empty($sortFields) && $transferObject instanceof SortableListTransferObjectInterface) {
+                trigger_error(
+                    'Using SortableListTransferObjectInterface is deprecated and will be removed in 2.0, pass $sortFields as a 4th parameter instead',
+                    E_USER_DEPRECATED
+                );
+                $sortFields = $transferObject->getAllowedToSort();
+            }
+        }
+
+        $pagination = PaginationModel::createFromRequest($request);
+        $sort       = SortModel::createFromRequest($request, $sortFields);
+
+        $dataProvider->setSort($sort);
+
+        return $this->paginationFactory->createCollection($pagination, $dataProvider);
     }
 
     /**
@@ -137,12 +157,12 @@ class RequestHandler
 
     /**
      * @param Request $request
-     * @param TransferObjectInterface $transferObject
+     * @param object $transferObject
      *
      * @return TransferObjectInterface
      * @throws ValidationException
      */
-    public function handleTransferObject(Request $request, TransferObjectInterface $transferObject) : TransferObjectInterface
+    public function handleTransferObject(Request $request, object $transferObject) : TransferObjectInterface
     {
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
         $transferObjectHydrator->handleRequest($request);

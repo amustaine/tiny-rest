@@ -3,24 +3,26 @@
 namespace TinyRest\Tests\Provider;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use TinyRest\Model\SortModel;
+use TinyRest\Sort\SortField;
 use TinyRest\Tests\DatabaseTestCase;
 use TinyRest\Provider\DBALQueryBuilderProvider;
-use TinyRest\Tests\Examples\DTO\ProductTransferObject;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 class DBALQueryBuilderProviderTest extends DatabaseTestCase
 {
     public function testProvide()
     {
-        $qb = $this->createProvider()->provide(new ProductTransferObject());
+        $provider = $this->createProvider();
+        $qb = $provider->provide();
 
         $this->assertTrue($qb instanceof QueryBuilder);
     }
 
     public function testToArray()
     {
-        $class = $this->createProvider();
-        $data  = $class->toArray(new ProductTransferObject());
+        $provider = $this->createProvider();
+        $data  = $provider->toArray();
 
         $this->assertTrue(is_array($data));
         $this->assertNotEmpty($data);
@@ -30,11 +32,9 @@ class DBALQueryBuilderProviderTest extends DatabaseTestCase
 
     public function testSort()
     {
-        $transferObject = new ProductTransferObject();
-        $transferObject->setSort('weight');
-        $transferObject->setSortDir('desc');
-
-        $qb = $this->createProvider()->provide($transferObject);
+        $provider = $this->createProvider();
+        $provider->setSort(new SortModel('weight', 'desc', [new SortField('p.weight', 'weight')]));
+        $qb = $provider->provide();
         $sort = $qb->getQueryPart('orderBy');
 
         $this->assertArrayHasKey(0, $sort);
@@ -48,7 +48,7 @@ class DBALQueryBuilderProviderTest extends DatabaseTestCase
     {
         return new class($this->getEntityManager()) extends DBALQueryBuilderProvider
         {
-            public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder
+            public function getQueryBuilder(?TransferObjectInterface $transferObject) : QueryBuilder
             {
                 $qb = $this->createQueryBuilder();
                 $qb

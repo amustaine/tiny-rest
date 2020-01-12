@@ -4,12 +4,11 @@ namespace TinyRest\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use TinyRest\Sort\SortHelper;
-use TinyRest\TransferObject\SortableListTransferObjectInterface;
-use TinyRest\TransferObject\TransferObjectInterface;
 
 class EntityListProvider implements ProviderInterface
 {
+    use SortTrait, FilterTrait;
+
     /**
      * @var EntityManagerInterface
      */
@@ -23,61 +22,47 @@ class EntityListProvider implements ProviderInterface
     /**
      * @var array
      */
-    private $sort;
+    private $entitySort;
 
     public function __construct(EntityManagerInterface $entityManager, string $class, array $sort = [])
     {
         $this->entityManager = $entityManager;
         $this->class         = $class;
-        $this->sort          = $sort;
+        $this->entitySort    = $sort;
     }
 
-    /**
-     * @param TransferObjectInterface $transferObject
-     *
-     * @return QueryBuilder
-     */
-    public function provide(TransferObjectInterface $transferObject) : QueryBuilder
+    public function provide(): QueryBuilder
     {
         $qb = $this->entityManager->createQueryBuilder();
         $qb
             ->select('c')
             ->from($this->class, 'c');
 
-        if ($this->sort) {
-            $field = key($this->sort);
-            $qb->orderBy('c.' . $field, $this->sort[$field]);
+        if ($this->entitySort) {
+            $field = key($this->entitySort);
+            $qb->orderBy('c.' . $field, $this->entitySort[$field]);
         }
 
-        if ($transferObject instanceof SortableListTransferObjectInterface) {
-            $this->applySort($qb, $transferObject);
+        if ($this->sort && $this->sort->getField()) {
+            $this->applySort($qb);
         }
 
         return $qb;
     }
 
-    /**
-     * @param TransferObjectInterface $transferObject
-     *
-     * @return mixed
-     */
-    public function toArray(TransferObjectInterface $transferObject)
+    public function toArray(): array
     {
-        return $this->provide($transferObject)->getQuery()->getResult();
+        return $this->provide()->getQuery()->getResult();
     }
 
-    protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
+    protected function applySort(QueryBuilder $queryBuilder)
     {
-        if (!SortHelper::isAllowedToSort($transferObject->getAllowedToSort(), $transferObject->getSort())) {
-            return;
-        }
-
-        $field = SortHelper::getSortField($transferObject->getAllowedToSort(), $transferObject->getSort());
+        $field = $this->sort->getField();
 
         if (false === strpos($field, 'c.')) {
             $field = 'c.' . $field;
         }
 
-        $queryBuilder->addOrderBy($field, SortHelper::getSortDir($transferObject->getSortDir()));
+        $queryBuilder->addOrderBy($field, $this->sort->getSortDir());
     }
 }

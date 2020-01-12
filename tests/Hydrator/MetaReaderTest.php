@@ -2,7 +2,7 @@
 
 namespace TinyRest\Tests\Hydrator;
 
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use TinyRest\Annotations\Mapping;
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
@@ -10,7 +10,7 @@ use TinyRest\Hydrator\MetaReader;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
 use TinyRest\TransferObject\TransferObjectInterface;
 
-class MetaReaderTest extends TestCase
+class MetaReaderTest extends KernelTestCase
 {
     public function testRelations()
     {

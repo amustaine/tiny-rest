@@ -6,12 +6,12 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use TinyRest\QueryBuilder\NativeQueryBuilder;
-use TinyRest\Sort\SortHelper;
-use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 abstract class NativeQueryProvider implements ProviderInterface
 {
+    use SortTrait, FilterTrait;
+
     /**
      * @var EntityManagerInterface
      */
@@ -36,30 +36,20 @@ abstract class NativeQueryProvider implements ProviderInterface
      */
     abstract protected function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder;
 
-    /**
-     * @param TransferObjectInterface $transferObject
-     *
-     * @return NativeQueryBuilder
-     */
-    public function provide(TransferObjectInterface $transferObject) : NativeQueryBuilder
+    public function provide(): NativeQueryBuilder
     {
-        $qb = $this->getQueryBuilder($transferObject);
+        $qb = $this->getQueryBuilder($this->filter);
 
-        if ($transferObject instanceof SortableListTransferObjectInterface) {
-            $this->applySort($qb, $transferObject);
+        if ($this->sort && $this->sort->getField()) {
+            $this->applySort($qb);
         }
 
-        return new NativeQueryBuilder($this->entityManager, $qb, $this->getRsm($transferObject));
+        return new NativeQueryBuilder($this->entityManager, $qb, $this->getRsm($this->filter));
     }
 
-    /**
-     * @param TransferObjectInterface $transferObject
-     *
-     * @return mixed
-     */
-    public function toArray(TransferObjectInterface $transferObject)
+    public function toArray(): array
     {
-        return $this->provide($transferObject)->createNativeQuery()->getResult();
+        return $this->provide()->createNativeQuery()->getResult();
     }
 
     /**
@@ -78,13 +68,8 @@ abstract class NativeQueryProvider implements ProviderInterface
         return $this->entityManager;
     }
 
-    protected function applySort(QueryBuilder $queryBuilder, SortableListTransferObjectInterface $transferObject)
+    protected function applySort(QueryBuilder $queryBuilder)
     {
-        if (!SortHelper::isAllowedToSort($transferObject->getAllowedToSort(), $transferObject->getSort())) {
-            return;
-        }
-
-        $field = SortHelper::getSortField($transferObject->getAllowedToSort(), $transferObject->getSort());
-        $queryBuilder->addOrderBy($field, SortHelper::getSortDir($transferObject->getSortDir()));
+        $queryBuilder->addOrderBy($this->sort->getField(), $this->sort->getSortDir());
     }
 }

@@ -2,17 +2,15 @@
 
 namespace TinyRest\Provider;
 
-use TinyRest\TransferObject\TransferObjectInterface;
+use TinyRest\Model\SortModel;
 
 interface ProviderInterface
 {
-    /**
-     * @param TransferObjectInterface $transferObject
-     */
-    public function provide(TransferObjectInterface $transferObject);
+    public function provide();
 
-    /**
-     * @param TransferObjectInterface $transferObject
-     */
-    public function toArray(TransferObjectInterface $transferObject);
+    public function setFilter(object $filter);
+
+    public function setSort(SortModel $sortModel);
+
+    public function toArray(): array;
 }

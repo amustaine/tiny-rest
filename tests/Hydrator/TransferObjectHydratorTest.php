@@ -2,14 +2,14 @@
 
 namespace TinyRest\Tests\Hydrator;
 
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use TinyRest\Annotations\Property;
 use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
 use TinyRest\TransferObject\TransferObjectInterface;
 
-class TransferObjectHydratorTest extends TestCase
+class TransferObjectHydratorTest extends KernelTestCase
 {
     public function testEmptyJsonObject()
     {

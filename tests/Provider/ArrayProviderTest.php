@@ -33,7 +33,7 @@ class ArrayProviderTest extends DatabaseTestCase
     {
         return new class extends ArrayProvider
         {
-            public function provide(TransferObjectInterface $transferObject) : array
+            public function provide(): array
             {
                 return [
                     ['id' => 1],

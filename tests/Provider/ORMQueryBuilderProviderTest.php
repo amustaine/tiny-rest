@@ -4,9 +4,10 @@ namespace TinyRest\Tests\Provider;
 
 use Doctrine\ORM\Query\Expr\OrderBy;
 use Doctrine\ORM\QueryBuilder;
+use TinyRest\Model\SortModel;
 use TinyRest\Provider\ORMQueryBuilderProvider;
+use TinyRest\Sort\SortField;
 use TinyRest\Tests\DatabaseTestCase;
-use TinyRest\Tests\Examples\DTO\ProductTransferObject;
 use TinyRest\Tests\Examples\Entity\Song;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -14,7 +15,7 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
 {
     public function testProvide()
     {
-        $qb = $this->createProvider()->provide($this->createTransferObject());
+        $qb = $this->createProvider()->provide();
 
         $this->assertTrue($qb instanceof QueryBuilder);
     }
@@ -22,7 +23,7 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
     public function testToArray()
     {
         $class = $this->createProvider();
-        $data  = $class->toArray($this->createTransferObject());
+        $data  = $class->toArray();
 
         $this->assertTrue(is_array($data));
         $this->assertNotEmpty($data);
@@ -32,9 +33,10 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
 
     public function testSort()
     {
-        $transferObject = new ProductTransferObject();
-        $transferObject->setSort('weight');
-        $qb = $this->createProvider()->provide($transferObject);
+        $provider = $this->createProvider();
+        $provider->setSort(new SortModel('weight', null, ['p.weight' => 'weight', 'z', 'd', new SortField('a', 'b')]));
+
+        $qb = $provider->provide();
 
         $sort = $qb->getDQLPart('orderBy');
 
@@ -56,7 +58,7 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
     {
         return new class($this->getEntityManager()) extends ORMQueryBuilderProvider
         {
-            public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder
+            public function getQueryBuilder(?TransferObjectInterface $transferObject) : QueryBuilder
             {
                 $qb = $this->createQueryBuilder();
                 $qb
@@ -65,16 +67,6 @@ class ORMQueryBuilderProviderTest extends DatabaseTestCase
 
                 return $qb;
             }
-        };
-    }
-
-    /**
-     * @return TransferObjectInterface
-     */
-    private function createTransferObject() : TransferObjectInterface
-    {
-        return new class implements TransferObjectInterface
-        {
         };
     }
 }
