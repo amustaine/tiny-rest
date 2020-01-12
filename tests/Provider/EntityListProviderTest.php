@@ -3,10 +3,10 @@
 namespace TinyRest\Tests\Provider;
 
 use Doctrine\ORM\QueryBuilder;
+use TinyRest\Model\SortModel;
 use TinyRest\Provider\EntityListProvider;
 use TinyRest\Sort\SortField;
 use TinyRest\Tests\DatabaseTestCase;
-use TinyRest\Tests\Examples\DTO\ProductTransferObject;
 use TinyRest\Tests\Examples\Entity\Song;
 use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\SortTrait;
@@ -34,11 +34,9 @@ class EntityListProviderTest extends DatabaseTestCase
 
     public function testSort()
     {
-        $transferObject = $this->createTransferObject();
-        $transferObject->setSort('name');
-        $transferObject->setSortDir('desc');
-
-        $qb = $this->createProvider()->provide($transferObject);
+        $provider = $this->createProvider();
+        $provider->setSort(new SortModel('name', 'desc', [new SortField('c.name', 'name')]));
+        $qb = $provider->provide();
         $sort = $qb->getDQLPart('orderBy');
 
         $sortVal = $sort[0];

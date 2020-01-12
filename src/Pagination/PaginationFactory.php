@@ -2,10 +2,10 @@
 
 namespace TinyRest\Pagination;
 
+use TinyRest\Model\PaginationModel;
 use TinyRest\Provider\ProviderInterface;
 use TinyRest\Pagination\Adapter\NativeQueryAdapter;
 use TinyRest\QueryBuilder\NativeQueryBuilder;
-use TinyRest\TransferObject\PaginatedListTransferObjectInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
@@ -35,15 +35,15 @@ class PaginationFactory
         $this->requestStack = $requestStack;
     }
 
-    public function createCollection(PaginatedListTransferObjectInterface $transferObject, ProviderInterface $dataProvider) : PaginatedCollection
+    public function createCollection(PaginationModel $paginationModel, ProviderInterface $dataProvider) : PaginatedCollection
     {
         try {
-            $adapter    = $this->getAdapter($dataProvider->provide($transferObject));
+            $adapter    = $this->getAdapter($dataProvider->provide());
             $pagerfanta = new Pagerfanta($adapter);
 
             $pagerfanta
-                ->setMaxPerPage($transferObject->getPageSize())
-                ->setCurrentPage($transferObject->getPage());
+                ->setMaxPerPage($paginationModel->getPageSize())
+                ->setCurrentPage($paginationModel->getPage());
 
             $pagerfanta->getIterator();
         } catch (OutOfRangeCurrentPageException $e) {

@@ -34,7 +34,7 @@ class TransferObjectHydrator
      */
     private $typeCaster;
 
-    public function __construct(TransferObjectInterface $transferObject)
+    public function __construct(object $transferObject)
     {
         $this->transferObject   = $transferObject;
         $this->metaReader       = new MetaReader($transferObject);
@@ -136,7 +136,7 @@ class TransferObjectHydrator
     {
         foreach ($callbacks as $event) {
             if (!empty($event->method)) {
-                [$this->transferObject, $event->method]();
+                ([$this->transferObject, $event->method])();
             } elseif (is_callable($event->callback)) {
                 ($event->callback)($this->transferObject);
             } else {

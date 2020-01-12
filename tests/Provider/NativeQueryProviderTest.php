@@ -5,10 +5,11 @@ namespace TinyRest\Tests\Provider;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use TinyRest\Model\SortModel;
 use TinyRest\Provider\NativeQueryProvider;
 use TinyRest\QueryBuilder\NativeQueryBuilder;
+use TinyRest\Sort\SortField;
 use TinyRest\Tests\DatabaseTestCase;
-use TinyRest\Tests\Examples\DTO\ProductTransferObject;
 use TinyRest\Tests\Examples\Entity\Song;
 use TinyRest\TransferObject\TransferObjectInterface;
 
@@ -16,7 +17,7 @@ class NativeQueryProviderTest extends DatabaseTestCase
 {
     public function testProvide()
     {
-        $qb = $this->createProvider()->provide(new ProductTransferObject());
+        $qb = $this->createProvider()->provide();
 
         $this->assertTrue($qb instanceof NativeQueryBuilder);
     }
@@ -24,7 +25,7 @@ class NativeQueryProviderTest extends DatabaseTestCase
     public function testToArray()
     {
         $class = $this->createProvider();
-        $data  = $class->toArray(new ProductTransferObject());
+        $data  = $class->toArray();
 
         $this->assertTrue(is_array($data));
         $this->assertNotEmpty($data);
@@ -34,11 +35,9 @@ class NativeQueryProviderTest extends DatabaseTestCase
 
     public function testSort()
     {
-        $transferObject = new ProductTransferObject();
-        $transferObject->setSort('weight');
-        $transferObject->setSortDir('desc');
-
-        $qb = $this->createProvider()->provide($transferObject);
+        $provider = $this->createProvider();
+        $provider->setSort(new SortModel('weight', 'desc', [new SortField('p.weight', 'weight')]));
+        $qb = $provider->provide();
         $sort = $qb->getQueryBuilder()->getQueryPart('orderBy');
 
         $this->assertArrayHasKey(0, $sort);
@@ -52,7 +51,7 @@ class NativeQueryProviderTest extends DatabaseTestCase
     {
         return new class($this->getEntityManager()) extends NativeQueryProvider
         {
-            public function getRsm(TransferObjectInterface $transferObject) : ResultSetMapping
+            public function getRsm(?TransferObjectInterface $transferObject) : ResultSetMapping
             {
                 $rsm = new ResultSetMappingBuilder($this->getEntityManager());
                 $rsm->addRootEntityFromClassMetadata(Song::class, 's');
@@ -60,7 +59,7 @@ class NativeQueryProviderTest extends DatabaseTestCase
                 return $rsm;
             }
 
-            public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder
+            public function getQueryBuilder(?TransferObjectInterface $transferObject) : QueryBuilder
             {
                 $qb = $this->createQueryBuilder();
                 $qb

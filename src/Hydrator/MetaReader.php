@@ -32,7 +32,7 @@ class MetaReader
 
     private $onObjectValid = [];
 
-    public function __construct(TransferObjectInterface $transferObject)
+    public function __construct(object $transferObject)
     {
         $this->annotationReader = new AnnotationReader();
         $this->reflection       = new \ReflectionClass($transferObject);
