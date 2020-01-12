@@ -16,7 +16,7 @@ class EntityListProviderTest extends DatabaseTestCase
 {
     public function testProvide()
     {
-        $qb = $this->createProvider()->provide($this->createTransferObject());
+        $qb = $this->createProvider()->provide();
 
         $this->assertTrue($qb instanceof QueryBuilder);
     }
@@ -24,7 +24,7 @@ class EntityListProviderTest extends DatabaseTestCase
     public function testToArray()
     {
         $class = $this->createProvider();
-        $data  = $class->toArray($this->createTransferObject());
+        $data  = $class->toArray();
 
         $this->assertTrue(is_array($data));
         $this->assertNotEmpty($data);
@@ -45,13 +45,21 @@ class EntityListProviderTest extends DatabaseTestCase
         $this->assertEquals('c.name desc', strtolower($sortVal->getParts()[0]));
     }
 
-
-    /**
-     * @return EntityListProvider
-     */
-    private function createProvider() : EntityListProvider
+    public function testSortByProvider()
     {
-        return new class($this->getEntityManager(), Song::class) extends EntityListProvider
+        $provider = $this->createProvider(['name' => 'desc']);
+        $qb = $provider->provide();
+        $sort = $qb->getDQLPart('orderBy');
+
+        $sortVal = $sort[0];
+
+        $this->assertArrayHasKey(0, $sort);
+        $this->assertEquals('c.name desc', strtolower($sortVal->getParts()[0]));
+    }
+
+    private function createProvider(array $sort = []) : EntityListProvider
+    {
+        return new class($this->getEntityManager(), Song::class, $sort) extends EntityListProvider
         {
         };
     }
