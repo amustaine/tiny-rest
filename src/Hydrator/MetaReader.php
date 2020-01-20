@@ -8,7 +8,6 @@ use TinyRest\Annotations\OnObjectHydrated;
 use TinyRest\Annotations\OnObjectValid;
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
-use TinyRest\TransferObject\TransferObjectInterface;
 
 class MetaReader
 {

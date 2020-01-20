@@ -5,10 +5,12 @@ namespace TinyRest\Tests;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TinyRest\Pagination\PaginationFactory;
 use TinyRest\RequestHandler;
+use TinyRest\Serializer\Serializer;
 
 class RequestHandlerCase extends DatabaseTestCase
 {
@@ -17,7 +19,7 @@ class RequestHandlerCase extends DatabaseTestCase
      */
     protected function createRequestHandler() : RequestHandler
     {
-        return new RequestHandler($this->getEntityManager(), $this->getValidator(), $this->getPaginationFactory());
+        return new RequestHandler($this->getEntityManager(), $this->getValidator(), $this->getPaginationFactory(), $this->getSerializer());
     }
 
     /**
@@ -49,12 +51,20 @@ class RequestHandlerCase extends DatabaseTestCase
      */
     protected function getRequestStack() : RequestStack
     {
+        $request = Request::createFromGlobals();
+        $request->attributes->set('_route', 'mockhost');
+
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack
             ->expects($this->any())
             ->method('getCurrentRequest')
-            ->willReturn(Request::createFromGlobals());
+            ->willReturn($request);
 
         return $requestStack;
+    }
+
+    protected function getSerializer(): SerializerInterface
+    {
+        return Serializer::create();
     }
 }

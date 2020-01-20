@@ -3,13 +3,13 @@
 namespace TinyRest\Pagination;
 
 use TinyRest\Model\PaginationModel;
+use TinyRest\Pagination\Adapter\DoctrineDbalAdapter;
 use TinyRest\Provider\ProviderInterface;
 use TinyRest\Pagination\Adapter\NativeQueryAdapter;
 use TinyRest\QueryBuilder\NativeQueryBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Adapter\DoctrineDbalAdapter;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
@@ -55,6 +55,8 @@ class PaginationFactory
 
     /**
      * @return PaginatedCollection
+     *
+     * @deprecated since 1.4 will be removed in 2.0
      */
     public function createEmptyCollection() : PaginatedCollection
     {
@@ -70,7 +72,7 @@ class PaginationFactory
     private function getAdapter($dataProvider) : AdapterInterface
     {
         if ($dataProvider instanceof QueryBuilder) {
-            $adapter = new DoctrineDbalAdapter($dataProvider, $this->getQueryBuilderModifier());
+            $adapter = new DoctrineDbalAdapter($dataProvider);
         } elseif ($dataProvider instanceof \Doctrine\ORM\QueryBuilder) {
             $adapter = new DoctrineORMAdapter($dataProvider);
         } elseif (is_array($dataProvider)) {
@@ -84,23 +86,6 @@ class PaginationFactory
         }
 
         return $adapter;
-    }
-
-    /**
-     * A default way to calculate total number of items in the query
-     *
-     * @return \Closure
-     */
-    private function getQueryBuilderModifier() : \Closure
-    {
-        return function (QueryBuilder $queryBuilder) {
-            $qb = clone $queryBuilder;
-
-            $queryBuilder
-                ->resetQueryParts()
-                ->select('COUNT(*) as total_count')
-                ->from("({$qb})", 'tmp');
-        };
     }
 
     private function getRouteBuilder()

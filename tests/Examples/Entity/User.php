@@ -3,6 +3,7 @@
 namespace TinyRest\Tests\Examples\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Table(name="users")
@@ -23,6 +24,7 @@ class User
      * @var string
      *
      * @ORM\Column(name="username", type="string")
+     * @Groups({"user:read"})
      */
     private $username;
 

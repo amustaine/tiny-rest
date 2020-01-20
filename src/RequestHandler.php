@@ -4,10 +4,15 @@ namespace TinyRest;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use TinyRest\Annotations\ResourceReader;
+use TinyRest\DataProvider\DataProviderInterface;
+use TinyRest\Handler\ApiResourceHandler;
 use TinyRest\Model\PaginationModel;
 use TinyRest\Model\SortModel;
+use TinyRest\Provider\EntityListProvider;
 use TinyRest\Provider\ProviderInterface;
 use TinyRest\ListCollection\Collection;
 use TinyRest\Exception\ValidationException;
@@ -16,6 +21,7 @@ use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Pagination\PaginatedCollection;
 use TinyRest\Pagination\PaginationFactory;
 use TinyRest\Provider\ProviderFactory;
+use TinyRest\Serializer\Serializer;
 use TinyRest\Sort\SortField;
 use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
@@ -47,16 +53,23 @@ class RequestHandler
      */
     private $validationGroups = null;
 
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        PaginationFactory $paginationFactory
+        PaginationFactory $paginationFactory,
+        SerializerInterface $serializer
     )
     {
         $this->entityManager     = $entityManager;
         $this->validator         = $validator;
         $this->paginationFactory = $paginationFactory;
         $this->providerFactory   = new ProviderFactory($this->entityManager);
+        $this->serializer        = $serializer;
     }
 
     /**
@@ -95,10 +108,19 @@ class RequestHandler
         return $this->paginationFactory->createCollection($pagination, $dataProvider);
     }
 
+    public function getCollection(Request $request, string $apiResource): string
+    {
+        $apiResourceHandler = new ApiResourceHandler($this->entityManager, $this->paginationFactory, $this->serializer);
+
+        return $apiResourceHandler->handle($request, $apiResource);
+    }
+
     /**
      * @param Request $request
      * @param TransferObjectInterface|null $transferObject
      * @param ProviderInterface $dataProvider
+     *
+     * @deprecated since 1.4 will be removed in 2.0
      *
      * @return Collection
      */

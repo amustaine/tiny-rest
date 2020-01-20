@@ -114,16 +114,14 @@ class PaginatedCollection
         return $links;
     }
 
-    /**
-     * @return array
-     */
-    public function normalize() : array
+    public function normalize(): array
     {
         return [
-            'total'   => $this->getTotal(),
-            'perPage' => $this->getPerPage(),
-            'data'    => $this->getData(),
-            'links'   => $this->getLinks()
+            'total'    => $this->getTotal(),
+            'perPage'  => $this->getPerPage(), //legacy field, will be removed in 2.0
+            'pageSize' => $this->getPerPage(),
+            'data'     => $this->getData(),
+            'links'    => $this->getLinks(),
         ];
     }
 }
