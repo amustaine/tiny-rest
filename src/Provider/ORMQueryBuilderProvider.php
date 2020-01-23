@@ -26,7 +26,7 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
     {
         $queryBuilder = $this->getQueryBuilder($this->filter);
 
-        if ($this->sort && $this->sort->getField()) {
+        if ($this->validSort()) {
             $this->applySort($queryBuilder);
         }
 

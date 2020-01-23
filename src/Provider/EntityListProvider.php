@@ -43,7 +43,7 @@ class EntityListProvider implements ProviderInterface
             $qb->orderBy('c.' . $field, $this->entitySort[$field]);
         }
 
-        if ($this->sort && $this->sort->getField()) {
+        if ($this->validSort()) {
             $this->applySort($qb);
         }
 

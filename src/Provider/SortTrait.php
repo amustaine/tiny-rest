@@ -11,6 +11,11 @@ trait SortTrait
      */
     private $sort;
 
+    public function validSort(): bool
+    {
+        return $this->sort && $this->sort->getField();
+    }
+
     public function setSort(SortModel $sortModel)
     {
         $this->sort = $sortModel;
