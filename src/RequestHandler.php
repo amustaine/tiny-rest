@@ -112,6 +112,8 @@ class RequestHandler
             $this->handleTransferObject($request, $transferObject);
         }
 
+        $dataProvider->setFilter($transferObject);
+
         return new Collection($dataProvider->toArray($transferObject));
     }
 
