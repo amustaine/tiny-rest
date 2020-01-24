@@ -15,15 +15,15 @@ class PaginationModel
     public static function createFromRequest(Request $request): self
     {
         $page     = (int)$request->query->get('page', 1);
-        $pageSize = (int)$request->query->get('pageSize', self::DEFAULT_PAGE_SIZE);
+        $pageSize = (int)$request->query->get('pageSize', self::defaultPageSize());
 
         return new self($page, $pageSize);
     }
 
     public function __construct(int $page, ?int $pageSize)
     {
-        $this->page     = $this->validatePage($page);
-        $this->pageSize = null === $pageSize ? self::DEFAULT_PAGE_SIZE : $pageSize;
+        $this->page      = $this->validatePage($page);
+        $this->pageSize  = null === $pageSize ? self::defaultPageSize() : $pageSize;
     }
 
     public function getPage(): int
@@ -43,5 +43,10 @@ class PaginationModel
         }
 
         return $page;
+    }
+
+    private static function defaultPageSize(): int
+    {
+        return (int)getenv('TINYREST_PAGE_SIZE') ?: self::DEFAULT_PAGE_SIZE;
     }
 }

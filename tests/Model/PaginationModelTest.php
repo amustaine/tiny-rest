@@ -46,4 +46,12 @@ class PaginationModelTest extends TestCase
         $this->assertEquals(1, $model->getPage());
         $this->assertEquals(-1, $model->getPageSize());
     }
+
+    public function testEnvPageSize()
+    {
+        putenv('TINYREST_PAGE_SIZE=15');
+        $model = new PaginationModel(1, null);
+        $this->assertEquals(1, $model->getPage());
+        $this->assertEquals(15, $model->getPageSize());
+    }
 }
