@@ -15,7 +15,8 @@ class PaginationModel
     public static function createFromRequest(Request $request): self
     {
         $page     = (int)$request->query->get('page', 1);
-        $pageSize = (int)$request->query->get('pageSize', self::defaultPageSize());
+        $pageSize = (int)$request->query->get('pageSize');
+        $pageSize = empty($pageSize) ? null : (int)$pageSize;
 
         return new self($page, $pageSize);
     }
