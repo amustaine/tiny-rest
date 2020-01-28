@@ -26,6 +26,15 @@ class PaginationModelTest extends TestCase
         $this->assertEquals(20, $model->getPageSize());
     }
 
+    public function testEmptyStringData()
+    {
+        $request = Request::create('localhost', 'GET', ['page' => '', 'pageSize' => '']);
+
+        $model = PaginationModel::createFromRequest($request);
+        $this->assertEquals(1, $model->getPage());
+        $this->assertEquals(20, $model->getPageSize());
+    }
+
     public function testNonNumericPage()
     {
         $request = Request::create('localhost', 'GET', ['page' => "HELLO WORLD!"]);
