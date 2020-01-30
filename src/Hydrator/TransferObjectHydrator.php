@@ -99,10 +99,10 @@ class TransferObjectHydrator
                 $value = $this->typeCaster->getString($value);
                 break;
             case Property::TYPE_ARRAY :
-                $value = $this->typeCaster->getArray($value);
+                $value = is_string($value) ? $this->typeCaster->getArray($value) : null;
                 break;
             case Property::TYPE_BOOLEAN :
-                $value = $this->typeCaster->getBoolean($value);
+                $value = is_string($value) ? $this->typeCaster->getBoolean($value) : null;
                 break;
             case Property::TYPE_DATETIME :
                 $value = $this->typeCaster->getDateTime($value);
