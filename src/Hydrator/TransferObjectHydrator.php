@@ -52,10 +52,11 @@ class TransferObjectHydrator
     /**
      * @param $data
      */
-    public function hydrate($data) : void
+    public function hydrate($data): void
     {
         if ($data instanceof Request) {
-            trigger_error('Passing Request object in hydrate() is deprecated and will be removed in version 2.0 use handleRequest() instead', E_USER_DEPRECATED);
+            trigger_error('Passing Request object in hydrate() is deprecated and will be removed in version 2.0 use handleRequest() instead',
+                E_USER_DEPRECATED);
 
             $this->handleRequest($data);
             return;
@@ -102,7 +103,9 @@ class TransferObjectHydrator
                 $value = is_string($value) ? $this->typeCaster->getArray($value) : null;
                 break;
             case Property::TYPE_BOOLEAN :
-                $value = is_string($value) ? $this->typeCaster->getBoolean($value) : null;
+                if (false === is_bool($value)) {
+                    $value = is_string($value) ? $this->typeCaster->getBoolean($value) : null;
+                }
                 break;
             case Property::TYPE_DATETIME :
                 $value = $this->typeCaster->getDateTime($value);
@@ -150,7 +153,7 @@ class TransferObjectHydrator
      *
      * @return bool
      */
-    public function hasValue(string $property) : bool
+    public function hasValue(string $property): bool
     {
         return array_key_exists($property, $this->data);
     }
@@ -171,7 +174,7 @@ class TransferObjectHydrator
      * @return array
      * @throws \Exception
      */
-    private function getBody(Request $request) : array
+    private function getBody(Request $request): array
     {
         if (!$request->getContent()) {
             return [];

@@ -283,4 +283,33 @@ class TransferObjectHydratorTest extends KernelTestCase
         $this->assertEquals('John Doe', $transferObject->user->userName);
     }
 
+    public function testBoolean()
+    {
+        $transferObject = new class {
+            /**
+             * @Property(type="boolean")
+             */
+            public $booleanField;
+        };
+
+        $hydrator = new TransferObjectHydrator($transferObject);
+        $hydrator->hydrate(['booleanField' => true]);
+
+        $this->assertEquals(true, $transferObject->booleanField);
+    }
+
+    public function testStringedBoolean()
+    {
+        $transferObject = new class {
+            /**
+             * @Property(type="boolean")
+             */
+            public $booleanField;
+        };
+
+        $hydrator = new TransferObjectHydrator($transferObject);
+        $hydrator->hydrate(['booleanField' => 'true']);
+
+        $this->assertEquals(true, $transferObject->booleanField);
+    }
 }
