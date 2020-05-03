@@ -5,6 +5,7 @@ namespace TinyRest\Tests\Hydrator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use TinyRest\Annotations\Property;
+use TinyRest\Annotations\PropertyArray;
 use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
 use TinyRest\TransferObject\TransferObjectInterface;
@@ -311,5 +312,52 @@ class TransferObjectHydratorTest extends KernelTestCase
         $hydrator->hydrate(['booleanField' => 'true']);
 
         $this->assertEquals(true, $transferObject->booleanField);
+    }
+
+    public function testArray()
+    {
+        $request = Request::create('localhost', 'GET', ['props' => ['prop1', 'prop2']]);
+
+        $transferObject = new class {
+            /**
+             * @Property(type="array", extra={"commaSeparated"=false})
+             */
+            public $props;
+        };
+
+        $hydrator = new TransferObjectHydrator($transferObject);
+        $hydrator->handleRequest($request);
+
+        $this->assertTrue(is_array($transferObject->props));
+        $this->assertCount(2, $transferObject->props);
+        $this->assertEquals('prop1', $transferObject->props[0]);
+        $this->assertEquals('prop2', $transferObject->props[1]);
+    }
+
+    public function testTypeMismatch()
+    {
+        $request = Request::create('localhost', 'GET', ['props' => ['prop1', 'prop2']]);
+
+        $transferObject = new class {
+            /**
+             * @Property(type="string")
+             */
+            private $props;
+
+            public function getProps(): string
+            {
+                return $this->props;
+            }
+
+            public function setProps(string $props)
+            {
+                $this->props = $props;
+            }
+        };
+
+        $hydrator = new TransferObjectHydrator($transferObject);
+        $hydrator->handleRequest($request);
+
+        $this->assertEquals('Array', $transferObject->getProps());
     }
 }
