@@ -73,7 +73,7 @@ class TransferObjectHydrator
 
             if ($annotation->mapped) {
                 if ($annotation->type) {
-                    $value = $this->castType($annotation->type, $value);
+                    $value = $this->castType($annotation->type, $value, $annotation->extra);
                 }
 
                 $this->propertyAccessor->setValue($this->transferObject, $propertyName, $value);
@@ -86,10 +86,11 @@ class TransferObjectHydrator
     /**
      * @param string $type
      * @param $value
+     * @param array $extra
      *
      * @return array|bool|\DateTime|null|object
      */
-    private function castType(string $type, $value)
+    private function castType(string $type, $value, array $extra = [])
     {
         if (null === $value) {
             return null;
@@ -100,7 +101,10 @@ class TransferObjectHydrator
                 $value = $this->typeCaster->getString($value);
                 break;
             case Property::TYPE_ARRAY :
-                $value = is_string($value) ? $this->typeCaster->getArray($value) : null;
+                $hasExtra = isset($extra[Property::COMMA_SEPARATED]);
+                if (!$hasExtra || $extra[Property::COMMA_SEPARATED] !== false) {
+                    $value = is_string($value) ? $this->typeCaster->getArray($value) : null;
+                }
                 break;
             case Property::TYPE_BOOLEAN :
                 if (false === is_bool($value)) {
