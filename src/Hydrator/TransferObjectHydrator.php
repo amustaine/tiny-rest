@@ -5,6 +5,7 @@ namespace TinyRest\Hydrator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use TinyRest\Annotations\Property;
+use TinyRest\Exception\CastTypeException;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 class TransferObjectHydrator
@@ -94,6 +95,10 @@ class TransferObjectHydrator
     {
         if (null === $value) {
             return null;
+        }
+
+        if ($type !== Property::TYPE_ARRAY && in_array(gettype($value), ['array'])) {
+            throw new CastTypeException(sprintf('Unable to convert "%s" value to "%s"', gettype($value), $type));
         }
 
         switch ($type) {

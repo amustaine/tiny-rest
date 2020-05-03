@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\PropertyArray;
+use TinyRest\Exception\CastTypeException;
 use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
 use TinyRest\TransferObject\TransferObjectInterface;
@@ -336,7 +337,7 @@ class TransferObjectHydratorTest extends KernelTestCase
 
     public function testTypeMismatch()
     {
-        $request = Request::create('localhost', 'GET', ['props' => ['prop1', 'prop2']]);
+        $request = Request::create('localhost', 'GET', ['props' => []]);
 
         $transferObject = new class {
             /**
@@ -344,7 +345,7 @@ class TransferObjectHydratorTest extends KernelTestCase
              */
             private $props;
 
-            public function getProps(): string
+            public function getProps():? string
             {
                 return $this->props;
             }
@@ -356,8 +357,8 @@ class TransferObjectHydratorTest extends KernelTestCase
         };
 
         $hydrator = new TransferObjectHydrator($transferObject);
-        $hydrator->handleRequest($request);
 
-        $this->assertEquals('Array', $transferObject->getProps());
+        $this->expectException(CastTypeException::class);
+        $hydrator->handleRequest($request);
     }
 }
