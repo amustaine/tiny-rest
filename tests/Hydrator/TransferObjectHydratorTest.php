@@ -5,7 +5,6 @@ namespace TinyRest\Tests\Hydrator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use TinyRest\Annotations\Property;
-use TinyRest\Annotations\PropertyArray;
 use TinyRest\Exception\CastTypeException;
 use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Tests\Examples\DTO\UserTransferObject;
@@ -333,32 +332,5 @@ class TransferObjectHydratorTest extends KernelTestCase
         $this->assertCount(2, $transferObject->props);
         $this->assertEquals('prop1', $transferObject->props[0]);
         $this->assertEquals('prop2', $transferObject->props[1]);
-    }
-
-    public function testTypeMismatch()
-    {
-        $request = Request::create('localhost', 'GET', ['props' => []]);
-
-        $transferObject = new class {
-            /**
-             * @Property(type="string")
-             */
-            private $props;
-
-            public function getProps():? string
-            {
-                return $this->props;
-            }
-
-            public function setProps(string $props)
-            {
-                $this->props = $props;
-            }
-        };
-
-        $hydrator = new TransferObjectHydrator($transferObject);
-
-        $this->expectException(CastTypeException::class);
-        $hydrator->handleRequest($request);
     }
 }

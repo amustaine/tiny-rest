@@ -1,13 +1,24 @@
 <?php
 
+/*
+ * This file is part of the TinyRest package.
+ *
+ * (c) TinyRest <https://github.com/RuSS-B/tiny-rest>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace TinyRest\Hydrator;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use TinyRest\Annotations\Property;
-use TinyRest\Exception\CastTypeException;
 use TinyRest\TransferObject\TransferObjectInterface;
 
+/**
+ * @author Russ Balabanov <russ.developer@gmail.com>
+ */
 class TransferObjectHydrator
 {
     /**
@@ -95,10 +106,6 @@ class TransferObjectHydrator
     {
         if (null === $value) {
             return null;
-        }
-
-        if ($type !== Property::TYPE_ARRAY && in_array(gettype($value), ['array'])) {
-            throw new CastTypeException(sprintf('Unable to convert "%s" value to "%s"', gettype($value), $type));
         }
 
         switch ($type) {
