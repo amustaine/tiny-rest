@@ -24,8 +24,9 @@ class EntityHydrator
      * @param TransferObjectInterface $transferObject
      * @param object $entity
      * @param bool|null $clearFields
+     * @param array $reset
      */
-    public function hydrate(TransferObjectInterface $transferObject, $entity, ?bool $clearFields = false)
+    public function hydrate(TransferObjectInterface $transferObject, $entity, ?bool $clearFields = false, array $reset = [])
     {
         if (!is_object($entity)) {
             throw new \InvalidArgumentException('$entity should be a doctrine Entity object class');
@@ -33,6 +34,7 @@ class EntityHydrator
 
         $metaReader = new MetaReader($transferObject);
         $relations  = $metaReader->getRelations();
+        $proprties  = $metaReader->getProperties();
 
         $propertyAccessor = new PropertyAccessor();
         $entityMetadata   = $this->entityManager->getClassMetadata(get_class($entity));
@@ -48,7 +50,7 @@ class EntityHydrator
 
             $value = $propertyAccessor->getValue($transferObject, $propertyName);
 
-            if (null === $value) {
+            if (null === $value && (!$proprties[$propertyName]?->resettable || !in_array($propertyName, $reset))) {
                 continue;
             }
 

@@ -150,7 +150,12 @@ class RequestHandler
         $this->handleTransferObject($request, $transferObject);
 
         $entityHydrator = new EntityHydrator($this->entityManager);
-        $entityHydrator->hydrate($transferObject, $entity, !$request->isMethod('PATCH'));
+        $entityHydrator->hydrate(
+            $transferObject,
+            $entity,
+            !$request->isMethod('PATCH'),
+            array_keys(array_filter(TransferObjectHydrator::payload($request), fn ($value) => null === $value))
+        );
 
         $this->validateObject($entity, null, $this->validationGroups);
 

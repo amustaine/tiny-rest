@@ -21,5 +21,7 @@ class Property
 
     public $mapped = true;
 
+    public $resettable = false;
+
     public $extra = [];
 }

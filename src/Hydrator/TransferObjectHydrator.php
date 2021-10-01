@@ -54,11 +54,14 @@ class TransferObjectHydrator
         $this->typeCaster       = new TypeCaster();
     }
 
+    public static function payload(Request $request) : array
+    {
+        return $request->isMethod('GET') ? $request->query->all() : self::getBody($request);
+    }
+
     public function handleRequest(Request $request)
     {
-        $data = $request->isMethod('GET') ? $request->query->all() : $this->getBody($request);
-
-        $this->hydrate($data);
+        $this->hydrate(self::payload($request));
     }
 
     /**
@@ -190,7 +193,7 @@ class TransferObjectHydrator
      * @return array
      * @throws \Exception
      */
-    private function getBody(Request $request): array
+    private static function getBody(Request $request): array
     {
         if (!$request->getContent()) {
             return [];
