@@ -59,7 +59,7 @@ class SortModel
 
     private function setDir(?string $dir)
     {
-        $this->sortDir = strtolower($dir) === 'desc' ? 'desc' : 'asc';
+        $this->sortDir = strtolower($dir ?? 'asc') === 'desc' ? 'desc' : 'asc';
     }
 
     protected function handleSortFields(array $rawSortFields)
