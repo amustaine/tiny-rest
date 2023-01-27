@@ -102,7 +102,7 @@ class RequestHandler
      *
      * @return Collection
      */
-    public function getList(Request $request, ?TransferObjectInterface $transferObject, ProviderInterface $dataProvider) : Collection
+    public function getList(Request $request, ?TransferObjectInterface $transferObject, ProviderInterface $dataProvider, array $sortFields = []) : Collection
     {
         if (null === $transferObject) {
             $transferObject = new class implements TransferObjectInterface
@@ -113,6 +113,7 @@ class RequestHandler
         }
 
         $dataProvider->setFilter($transferObject);
+        $dataProvider->setSort(SortModel::createFromRequest($request, $sortFields));
 
         return new Collection($dataProvider->toArray($transferObject));
     }

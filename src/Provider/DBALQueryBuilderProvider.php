@@ -35,7 +35,7 @@ abstract class DBALQueryBuilderProvider implements ProviderInterface
 
     public function toArray(): array
     {
-        return $this->provide()->execute()->fetchAll();
+        return $this->provide()->execute()->fetchAllAssociative();
     }
 
     /**

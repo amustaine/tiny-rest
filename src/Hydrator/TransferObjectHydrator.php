@@ -122,9 +122,7 @@ class TransferObjectHydrator
                 }
                 break;
             case Property::TYPE_BOOLEAN :
-                if (is_int($value)) {
-                    $value = 0 < $value;
-                } elseif (false === is_bool($value)) {
+                if (false === is_bool($value)) {
                     $value = is_string($value) ? $this->typeCaster->getBoolean($value) : null;
                 }
                 break;
