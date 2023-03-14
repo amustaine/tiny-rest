@@ -6,17 +6,14 @@ use TinyRest\Model\SortModel;
 
 trait SortTrait
 {
-    /**
-     * @var SortModel
-     */
-    private $sort;
+    private ?SortModel $sort = null;
 
-    public function validSort(): bool
+    public function validSort() : bool
     {
-        return $this->sort && $this->sort->getField();
+        return null !== $this->sort?->getField();
     }
 
-    public function setSort(SortModel $sortModel)
+    public function setSort(SortModel $sortModel) : void
     {
         $this->sort = $sortModel;
     }

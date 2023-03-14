@@ -10,19 +10,14 @@ abstract class DBALQueryBuilderProvider implements ProviderInterface
 {
     use SortTrait, FilterTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
+
     }
 
     abstract public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder;
 
-    public function provide(): QueryBuilder
+    public function provide() : QueryBuilder
     {
         $qb = $this->getQueryBuilder($this->filter);
 
@@ -33,25 +28,22 @@ abstract class DBALQueryBuilderProvider implements ProviderInterface
         return $qb;
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->provide()->execute()->fetchAllAssociative();
     }
 
-    /**
-     * @return QueryBuilder
-     */
     public function createQueryBuilder() : QueryBuilder
     {
         return $this->entityManager->getConnection()->createQueryBuilder();
     }
 
-    public function setFilter(object $transferObject)
+    public function setFilter(object $transferObject) : void
     {
         $this->filter = $transferObject;
     }
 
-    protected function applySort(QueryBuilder $queryBuilder)
+    protected function applySort(QueryBuilder $queryBuilder) : void
     {
         $queryBuilder->addOrderBy($this->sort->getField(), $this->sort->getSortDir());
     }

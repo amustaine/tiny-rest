@@ -7,7 +7,7 @@ But if you are eager and cannot wait:
 ## Installation
 
 ```
-composer require russbalabanov/tiny-rest
+composer require amustaine/tiny-rest
 ```
 
 ## Configuration

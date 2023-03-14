@@ -9,35 +9,15 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class NativeQueryBuilder
 {
-    /**
-     * @var QueryBuilder
-     */
-    private $queryBuilder;
-
-    /**
-     * @var ResultSetMapping
-     */
-    private $resultSetMapping;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        QueryBuilder $queryBuilder,
-        ResultSetMapping $resultSetMapping
+        private readonly EntityManagerInterface $entityManager,
+        private readonly QueryBuilder           $queryBuilder,
+        private readonly ResultSetMapping       $resultSetMapping
     )
     {
-        $this->entityManager    = $entityManager;
-        $this->queryBuilder     = $queryBuilder;
-        $this->resultSetMapping = $resultSetMapping;
+
     }
 
-    /**
-     * @return QueryBuilder
-     */
     public function getQueryBuilder() : QueryBuilder
     {
         return $this->queryBuilder;

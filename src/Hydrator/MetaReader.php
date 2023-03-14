@@ -3,74 +3,74 @@
 namespace TinyRest\Hydrator;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use TinyRest\Attributes\AttributeReader;
 use TinyRest\Annotations\Mapping;
 use TinyRest\Annotations\OnObjectHydrated;
 use TinyRest\Annotations\OnObjectValid;
 use TinyRest\Annotations\Property;
 use TinyRest\Annotations\Relation;
-use TinyRest\TransferObject\TransferObjectInterface;
+use ReflectionClass;
 
 class MetaReader
 {
-    /**
-     * @var AnnotationReader
-     */
-    private $annotationReader;
+    private AnnotationReader $annotationReader;
+    private AttributeReader  $attributeReader;
+    private ReflectionClass  $reflection;
 
-    /**
-     * @var \ReflectionClass
-     */
-    private $reflection;
-
-    private $properties = [];
-
-    private $relations = [];
-
-    private $mapping = [];
-
-    private $onObjectHydrated = [];
-
-    private $onObjectValid = [];
+    private array $properties       = [];
+    private array $relations        = [];
+    private array $mapping          = [];
+    private array $onObjectHydrated = [];
+    private array $onObjectValid    = [];
 
     public function __construct(object $transferObject)
     {
         $this->annotationReader = new AnnotationReader();
-        $this->reflection       = new \ReflectionClass($transferObject);
+        $this->attributeReader  = new AttributeReader();
+        $this->reflection       = new ReflectionClass($transferObject);
 
         $this->handleClassAnnotations();
         $this->handlePropertyAnnotations();
     }
 
-    private function handleClassAnnotations()
+    private function handleClassAnnotations() : void
     {
-        $classAnnotations = $this->annotationReader->getClassAnnotations($this->reflection);
+        $annotations = $this->annotationReader->getClassAnnotations($this->reflection);
+        $attributes  = $this->attributeReader->getClassAttributes($this->reflection);
 
-        foreach ($classAnnotations as $annotation) {
-            if ($annotation instanceof OnObjectHydrated) {
-                $this->onObjectHydrated[] = $annotation;
-            } elseif ($annotation instanceof OnObjectValid) {
-                $this->onObjectValid[] = $annotation;
+        foreach (array_merge($annotations, $attributes) as $instance) {
+            if ($instance instanceof OnObjectHydrated) {
+                $this->onObjectHydrated[] = $instance;
+            }
+
+            if ($instance instanceof OnObjectValid) {
+                $this->onObjectValid[] = $instance;
             }
         }
     }
 
-    private function handlePropertyAnnotations()
+    private function handlePropertyAnnotations() : void
     {
         foreach ($this->reflection->getProperties() as $property) {
             $annotations  = $this->annotationReader->getPropertyAnnotations($property);
+            $attributes   = $this->attributeReader->getPropertyAttributes($property);
             $propertyName = $property->getName();
 
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof Property) {
-                    if (empty($annotation->name)) {
-                        $annotation->name = $propertyName;
+            foreach (array_merge($annotations, $attributes) as $instance) {
+                if ($instance instanceof Property) {
+                    if (empty($instance->name)) {
+                        $instance->name = $propertyName;
                     }
 
-                    $this->properties[$propertyName] = $annotation;
-                } elseif ($annotation instanceof Relation) {
-                    $this->relations[$propertyName] = $annotation;
-                } elseif ($annotation instanceof Mapping) {
-                    $this->mapping[$propertyName] = $annotation;
+                    $this->properties[$propertyName] = $instance;
+                }
+
+                if ($instance instanceof Relation) {
+                    $this->relations[$propertyName] = $instance;
+                }
+
+                if ($instance instanceof Mapping) {
+                    $this->mapping[$propertyName] = $instance;
                 }
             }
 

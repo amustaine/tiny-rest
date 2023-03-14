@@ -2,13 +2,21 @@
 
 namespace TinyRest\Annotations;
 
+use Attribute;
+use TinyRest\Attributes\AttributeInterface;
+use TinyRest\Attributes\AttributeTrait;
+
 /**
  * @Annotation
  * @Target({"CLASS"})
  */
-abstract class AbstractCallbackAnnotation
+#[Attribute(Attribute::TARGET_CLASS)]
+abstract class AbstractCallbackAnnotation implements AttributeInterface
 {
-    public $method;
-
-    public $callback;
+    use AttributeTrait;
+    
+    public function __construct(array $options = [], public ?string $method = null, public ?string $callback = null)
+    {
+        $this->populateProperties($options);
+    }
 }

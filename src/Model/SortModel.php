@@ -7,20 +7,9 @@ use TinyRest\Sort\SortField;
 
 class SortModel
 {
-    /**
-     * @var string
-     */
-    private $sortDir;
-
-    /**
-     * @var string|null
-     */
-    private $sort;
-
-    /**
-     * @var string|null
-     */
-    private $field;
+    private string  $sortDir = 'asc';
+    private ?string $sort    = null;
+    private ?string $field   = null;
 
     public static function createFromRequest(Request $request, array $sortFields): self
     {
@@ -57,12 +46,12 @@ class SortModel
         return $this->field;
     }
 
-    private function setDir(?string $dir)
+    private function setDir(?string $dir) : void
     {
-        $this->sortDir = strtolower($dir ?? 'asc') === 'desc' ? 'desc' : 'asc';
+        $this->sortDir = 'desc' === strtolower($dir) ? 'desc' : 'asc';
     }
 
-    protected function handleSortFields(array $rawSortFields)
+    protected function handleSortFields(array $rawSortFields) : array
     {
         $sortFields = [];
 
@@ -80,7 +69,7 @@ class SortModel
         return $sortFields;
     }
 
-    private function toSortField(string $field, ?string $alias)
+    private function toSortField(string $field, ?string $alias) : SortField
     {
         if (!$alias) {
             $alias = $field;
@@ -89,7 +78,7 @@ class SortModel
         return new SortField($field, $alias);
     }
 
-    private function isAllowedToSort(array $sortFields, ?string $value): bool
+    private function isAllowedToSort(array $sortFields, ?string $value) : bool
     {
         if (!$value) {
             return false;
@@ -106,7 +95,7 @@ class SortModel
         return false;
     }
 
-    private function getSortField(array $sortFields, string $value): string
+    private function getSortField(array $sortFields, string $value) : string
     {
         foreach ($sortFields as $sortField) {
             if ($sortField instanceof SortField) {

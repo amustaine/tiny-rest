@@ -9,29 +9,12 @@ class EntityListProvider implements ProviderInterface
 {
     use SortTrait, FilterTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var string
-     */
-    private $class;
-
-    /**
-     * @var array
-     */
-    private $entitySort;
-
-    public function __construct(EntityManagerInterface $entityManager, string $class, array $sort = [])
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly string $class, private readonly array $entitySort = [])
     {
-        $this->entityManager = $entityManager;
-        $this->class         = $class;
-        $this->entitySort    = $sort;
+
     }
 
-    public function provide(): QueryBuilder
+    public function provide() : QueryBuilder
     {
         $qb = $this->entityManager->createQueryBuilder();
         $qb
@@ -50,12 +33,12 @@ class EntityListProvider implements ProviderInterface
         return $qb;
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->provide()->getQuery()->getResult();
     }
 
-    protected function applySort(QueryBuilder $queryBuilder)
+    protected function applySort(QueryBuilder $queryBuilder) : void
     {
         $field = $this->sort->getField();
 

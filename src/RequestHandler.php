@@ -4,6 +4,7 @@ namespace TinyRest;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TinyRest\Model\PaginationModel;
@@ -16,62 +17,29 @@ use TinyRest\Hydrator\TransferObjectHydrator;
 use TinyRest\Pagination\PaginatedCollection;
 use TinyRest\Pagination\PaginationFactory;
 use TinyRest\Provider\ProviderFactory;
-use TinyRest\Sort\SortField;
 use TinyRest\TransferObject\SortableListTransferObjectInterface;
 use TinyRest\TransferObject\TransferObjectInterface;
 
 class RequestHandler
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private ProviderFactory $providerFactory;
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var PaginationFactory
-     */
-    private $paginationFactory;
-
-    /**
-     * @var ProviderFactory
-     */
-    private $providerFactory;
-
-    /**
-     * Same groups as in ValidatorInterface
-     */
-    private $validationGroups = null;
+    private array|GroupSequence|null $validationGroups = null;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        PaginationFactory $paginationFactory
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface     $validator,
+        private readonly PaginationFactory      $paginationFactory
     )
     {
-        $this->entityManager     = $entityManager;
-        $this->validator         = $validator;
-        $this->paginationFactory = $paginationFactory;
-        $this->providerFactory   = new ProviderFactory($this->entityManager);
+        $this->providerFactory = new ProviderFactory($this->entityManager);
     }
 
-    /**
-     * @param Request $request
-     * @param object|null $transferObject
-     * @param ProviderInterface $dataProvider
-     * @param SortField[] $sortFields
-     *
-     * @return PaginatedCollection
-     */
     public function getPaginatedList(
-        Request $request,
-        ?object $transferObject,
-        ProviderInterface $dataProvider,
-        array $sortFields = []
+        Request                  $request,
+        ?TransferObjectInterface $transferObject,
+        ProviderInterface        $dataProvider,
+        array                    $sortFields = []
     ): PaginatedCollection
     {
         if ($transferObject) {
@@ -95,13 +63,6 @@ class RequestHandler
         return $this->paginationFactory->createCollection($pagination, $dataProvider);
     }
 
-    /**
-     * @param Request $request
-     * @param TransferObjectInterface|null $transferObject
-     * @param ProviderInterface $dataProvider
-     *
-     * @return Collection
-     */
     public function getList(Request $request, ?TransferObjectInterface $transferObject, ProviderInterface $dataProvider, array $sortFields = []) : Collection
     {
         if (null === $transferObject) {
@@ -115,18 +76,13 @@ class RequestHandler
         $dataProvider->setFilter($transferObject);
         $dataProvider->setSort(SortModel::createFromRequest($request, $sortFields));
 
-        return new Collection($dataProvider->toArray($transferObject));
+        return new Collection($dataProvider->toArray());
     }
 
     /**
-     * @param Request $request
-     * @param TransferObjectInterface $transferObject
-     * @param $entity
-     *
-     * @return object
      * @throws ValidationException
      */
-    public function create(Request $request, TransferObjectInterface $transferObject, $entity)
+    public function create(Request $request, TransferObjectInterface $transferObject, $entity) : mixed
     {
         $this->handleTransferObject($request, $transferObject);
 
@@ -139,14 +95,9 @@ class RequestHandler
     }
 
     /**
-     * @param Request $request
-     * @param TransferObjectInterface $transferObject
-     * @param $entity
-     *
-     * @return object
      * @throws ValidationException
      */
-    public function update(Request $request, TransferObjectInterface $transferObject, $entity)
+    public function update(Request $request, TransferObjectInterface $transferObject, $entity) : mixed
     {
         $this->handleTransferObject($request, $transferObject);
 
@@ -164,13 +115,9 @@ class RequestHandler
     }
 
     /**
-     * @param Request $request
-     * @param object $transferObject
-     *
-     * @return TransferObjectInterface
      * @throws ValidationException
      */
-    public function handleTransferObject(Request $request, object $transferObject) : TransferObjectInterface
+    public function handleTransferObject(Request $request, TransferObjectInterface $transferObject) : object
     {
         $transferObjectHydrator = new TransferObjectHydrator($transferObject);
         $transferObjectHydrator->handleRequest($request);
@@ -181,20 +128,12 @@ class RequestHandler
         return $transferObject;
     }
 
-    /**
-     * @return ProviderFactory
-     */
     public function getProviderFactory() : ProviderFactory
     {
         return $this->providerFactory;
     }
 
-    /**
-     * @param $groups
-     *
-     * @return RequestHandler
-     */
-    public function setValidationGroups($groups) : self
+    public function setValidationGroups(array|GroupSequence $groups) : self
     {
         $this->validationGroups = $groups;
 
@@ -202,11 +141,6 @@ class RequestHandler
     }
 
     /**
-     * @param $object
-     * @param null $constraints
-     * @param null $groups
-     *
-     * @return ConstraintViolationListInterface
      * @throws ValidationException
      */
     public function validateObject($object, $constraints = null, $groups = null) : ConstraintViolationListInterface

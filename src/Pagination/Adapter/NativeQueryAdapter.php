@@ -7,14 +7,9 @@ use TinyRest\QueryBuilder\NativeQueryBuilder;
 
 class NativeQueryAdapter implements AdapterInterface
 {
-    /**
-     * @var NativeQueryBuilder
-     */
-    private $nativeQueryBuilder;
-
-    public function __construct(NativeQueryBuilder $nativeQueryBuilder)
+    public function __construct(private readonly NativeQueryBuilder $nativeQueryBuilder)
     {
-        $this->nativeQueryBuilder = $nativeQueryBuilder;
+
     }
 
     /**

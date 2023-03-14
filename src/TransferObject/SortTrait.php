@@ -6,48 +6,28 @@ use TinyRest\Annotations\Property;
 
 trait SortTrait
 {
-    /**
-     * @var string|null
-     *
-     * @Property()
-     */
-    private $sort;
+    #[Property]
+    private ?string $sort = null;
 
-    /**
-     * @var string|null
-     *
-     * @Property()
-     */
-    private $sortDir;
+    #[Property]
+    private ?string $sortDir = null;
 
-    /**
-     * @return string|null
-     */
     public function getSort() : ?string
     {
         return $this->sort;
     }
 
-    /**
-     * @param string|null $sort
-     */
-    public function setSort(?string $sort)
+    public function setSort(?string $sort) : void
     {
         $this->sort = $sort;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSortDir() : ?string
     {
         return $this->sortDir;
     }
 
-    /**
-     * @param string|null $sortDir
-     */
-    public function setSortDir(?string $sortDir)
+    public function setSortDir(?string $sortDir) : void
     {
         $this->sortDir = $sortDir;
     }

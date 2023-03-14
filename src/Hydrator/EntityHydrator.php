@@ -2,7 +2,7 @@
 
 namespace TinyRest\Hydrator;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use TinyRest\TransferObject\TransferObjectInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,23 +10,12 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class EntityHydrator
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
+
     }
 
-    /**
-     * @param TransferObjectInterface $transferObject
-     * @param object $entity
-     * @param bool|null $clearFields
-     * @param array $reset
-     */
-    public function hydrate(TransferObjectInterface $transferObject, $entity, ?bool $clearFields = false, array $reset = [])
+    public function hydrate(TransferObjectInterface $transferObject, mixed $entity, ?bool $clearFields = false, array $reset = []) : void
     {
         if (!is_object($entity)) {
             throw new \InvalidArgumentException('$entity should be a doctrine Entity object class');
@@ -34,7 +23,7 @@ class EntityHydrator
 
         $metaReader = new MetaReader($transferObject);
         $relations  = $metaReader->getRelations();
-        $proprties  = $metaReader->getProperties();
+        $properties = $metaReader->getProperties();
 
         $propertyAccessor = new PropertyAccessor();
         $entityMetadata   = $this->entityManager->getClassMetadata(get_class($entity));
@@ -50,7 +39,7 @@ class EntityHydrator
 
             $value = $propertyAccessor->getValue($transferObject, $propertyName);
 
-            if (null === $value && (!$proprties[$propertyName]?->resettable || !in_array($propertyName, $reset))) {
+            if (null === $value && (!$properties[$propertyName]?->resettable || !in_array($propertyName, $reset))) {
                 continue;
             }
 
@@ -69,21 +58,15 @@ class EntityHydrator
         }
     }
 
-    /**
-     * @param $value
-     * @param array $fieldMapping
-     *
-     * @return \DateTime|null|mixed
-     */
-    private function castValue($value, array $fieldMapping)
+    private function castValue($value, array $fieldMapping) : mixed
     {
         if (is_string($value) && in_array($fieldMapping['type'], [
-                Type::DATE,
-                Type::DATE_IMMUTABLE,
-                Type::DATETIME,
-                Type::DATETIME_IMMUTABLE,
-                Type::DATETIMETZ,
-                Type::DATETIMETZ_IMMUTABLE
+                Types::DATE_IMMUTABLE,
+                Types::DATE_MUTABLE,
+                Types::DATETIME_IMMUTABLE,
+                Types::DATETIME_MUTABLE,
+                Types::DATETIMETZ_IMMUTABLE,
+                Types::DATETIMETZ_MUTABLE
             ])) {
             $value = (new TypeCaster())->getDateTime($value);
         }
@@ -91,18 +74,15 @@ class EntityHydrator
         return $value;
     }
 
-    private function loadRelation(string $class, string $byField, $value)
+    private function loadRelation(string $class, string $byField, $value) : mixed
     {
         return $this->entityManager->getRepository($class)->findOneBy([$byField => $value]);
     }
 
-    /**
-     * @param object $entity
-     * @param ClassMetadata $classMetadata
-     */
-    private function clearFields($entity, ClassMetadata $classMetadata)
+    private function clearFields($entity, ClassMetadata $classMetadata) : void
     {
         $reflection = $classMetadata->getReflectionClass();
+
         foreach ($reflection->getProperties() as $property) {
             if (in_array($property->getName(), $classMetadata->getIdentifier())) {
                 continue;

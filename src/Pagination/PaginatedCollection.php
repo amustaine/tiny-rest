@@ -7,53 +7,27 @@ use Pagerfanta\Pagerfanta;
 
 class PaginatedCollection
 {
-    /**
-     * @var int
-     */
-    private $total;
-
-    /**
-     * @var Pagerfanta
-     */
-    private $pagerfanta;
-
-    /**
-     * @var PaginationNormalizerInterface|null $normalizer
-     */
-    protected $normalizer;
-
-    /**
-     * @var int
-     */
-    private $page;
-
-    /**
-     * @var int
-     */
-    private $perPage;
-
-    /**
-     * @var callable
-     */
+    private int $total;
+    private int $page;
+    private int $perPage;
+    
+    protected ?PaginationNormalizerInterface $normalizer = null;
+    
     private $routeBuilder;
 
-    public function __construct(Pagerfanta $pagerfanta, callable $routeBuilder)
+    public function __construct(private readonly Pagerfanta $pagerfanta, callable $routeBuilder)
     {
-        $this->pagerfanta   = $pagerfanta;
         $this->total        = $this->pagerfanta->getNbResults();
         $this->page         = $this->pagerfanta->getCurrentPage();
         $this->perPage      = $this->pagerfanta->getMaxPerPage();
         $this->routeBuilder = $routeBuilder;
     }
 
-    public function setNormalizer(PaginationNormalizerInterface $normalizer)
+    public function setNormalizer(PaginationNormalizerInterface $normalizer) : void
     {
         $this->normalizer = $normalizer;
     }
-
-    /**
-     * @return array
-     */
+    
     public function getData() : array
     {
         $data = [];
@@ -68,26 +42,17 @@ class PaginatedCollection
 
         return $data;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getTotal() : int
     {
         return $this->total;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getPage() : int
     {
         return $this->page;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getPerPage() : int
     {
         return $this->perPage;

@@ -2,12 +2,20 @@
 
 namespace TinyRest\Annotations;
 
+use Attribute;
+use TinyRest\Attributes\AttributeInterface;
+use TinyRest\Attributes\AttributeTrait;
+
 /**
  * @Annotation
  */
-class Mapping
+#[Attribute(Attribute::TARGET_PROPERTY)]
+class Mapping implements AttributeInterface
 {
-    public $column;
+    use AttributeTrait;
 
-    public $mapped = true;
+    public function __construct(array $options = [], public ?string $column = null, public bool $mapped = true)
+    {
+        $this->populateProperties($options);
+    }
 }

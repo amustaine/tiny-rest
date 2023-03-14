@@ -4,19 +4,10 @@ namespace TinyRest\Sort;
 
 class SortField
 {
-    /**
-     * @var string
-     */
-    private $field;
+    private array $aliases;
 
-    /**
-     * @var array
-     */
-    private $aliases;
-
-    public function __construct(string $field, ...$aliases)
+    public function __construct(private readonly string $field, ...$aliases)
     {
-        $this->field   = $field;
         $this->aliases = $aliases;
     }
 

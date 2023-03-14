@@ -2,23 +2,15 @@
 
 namespace TinyRest\Hydrator;
 
+use DateTime;
+
 class TypeCaster
 {
-    /**
-     * @param string $value
-     *
-     * @return bool
-     */
     public function getBoolean(string $value) : bool
     {
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
-    /**
-     * @param string $value
-     *
-     * @return array
-     */
     public function getArray(string $value) : array
     {
         $data = [];
@@ -35,12 +27,7 @@ class TypeCaster
         return $data;
     }
 
-    /**
-     * @param $value
-     *
-     * @return \DateTime|null
-     */
-    public function getDateTime($value) : ?\DateTime
+    public function getDateTime(mixed $value) : ?DateTime
     {
         $timestamp = strtotime($value);
 
@@ -48,35 +35,20 @@ class TypeCaster
             return null;
         }
 
-        return (new \DateTime())->setTimestamp($timestamp);
+        return (new DateTime())->setTimestamp($timestamp);
     }
 
-    /**
-     * @param $value
-     *
-     * @return int
-     */
-    public function getInteger($value) : int
+    public function getInteger(mixed $value) : int
     {
         return (int) $value;
     }
 
-    /**
-     * @param $value
-     *
-     * @return float
-     */
-    public function getFloat($value) : float
+    public function getFloat(mixed $value) : float
     {
         return (float) $value;
     }
 
-    /**
-     * @param $value
-     *
-     * @return string
-     */
-    public function getString($value) : string
+    public function getString(mixed $value) : string
     {
         return (string) $value;
     }

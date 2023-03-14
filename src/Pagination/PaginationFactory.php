@@ -9,8 +9,8 @@ use TinyRest\QueryBuilder\NativeQueryBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Adapter\DoctrineDbalAdapter;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Doctrine\DBAL\QueryAdapter as DoctrineDbalAdapter;
+use Pagerfanta\Doctrine\ORM\QueryAdapter as DoctrineORMAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,20 +19,9 @@ use Symfony\Component\Routing\RouterInterface;
 
 class PaginationFactory
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    public function __construct(RouterInterface $router, RequestStack $requestStack)
+    public function __construct(private readonly RouterInterface $router, private readonly RequestStack $requestStack)
     {
-        $this->router       = $router;
-        $this->requestStack = $requestStack;
+        
     }
 
     public function createCollection(PaginationModel $paginationModel, ProviderInterface $dataProvider) : PaginatedCollection

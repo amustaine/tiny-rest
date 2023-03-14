@@ -8,15 +8,14 @@ class PaginationModel
 {
     const DEFAULT_PAGE_SIZE = 20;
 
-    private $page;
-
-    private $pageSize;
+    private int $page;
+    private int $pageSize;
 
     public static function createFromRequest(Request $request): self
     {
         $page     = (int)$request->query->get('page', 1);
         $pageSize = (int)$request->query->get('pageSize');
-        $pageSize = empty($pageSize) ? null : (int)$pageSize;
+        $pageSize = empty($pageSize) ? null : (int) $pageSize;
 
         return new self($page, $pageSize);
     }

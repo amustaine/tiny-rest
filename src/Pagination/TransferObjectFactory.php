@@ -11,7 +11,7 @@ use TinyRest\TransferObject\TransferObjectInterface;
 
 class TransferObjectFactory
 {
-    private $allowedToSort = [];
+    private array $allowedToSort = [];
 
     public function addSortField(string $field, ...$aliases)
     {

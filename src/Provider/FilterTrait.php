@@ -4,9 +4,9 @@ namespace TinyRest\Provider;
 
 trait FilterTrait
 {
-    private $filter;
+    private mixed $filter;
 
-    public function setFilter(object $filter)
+    public function setFilter(object $filter) : void
     {
         $this->filter = $filter;
     }

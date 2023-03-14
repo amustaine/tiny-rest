@@ -11,6 +11,7 @@
 
 namespace TinyRest\Hydrator;
 
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use TinyRest\Annotations\Property;
@@ -21,34 +22,13 @@ use TinyRest\TransferObject\TransferObjectInterface;
  */
 class TransferObjectHydrator
 {
-    /**
-     * @var array
-     */
-    private $data = [];
+    private array                    $data = [];
+    private MetaReader               $metaReader;
+    private PropertyAccessor         $propertyAccessor;
+    private TypeCaster               $typeCaster;
 
-    /**
-     * @var TransferObjectInterface
-     */
-    private $transferObject;
-
-    /**
-     * @var MetaReader
-     */
-    private $metaReader;
-
-    /**
-     * @var PropertyAccessor
-     */
-    private $propertyAccessor;
-
-    /**
-     * @var TypeCaster
-     */
-    private $typeCaster;
-
-    public function __construct(object $transferObject)
+    public function __construct(private readonly TransferObjectInterface $transferObject)
     {
-        $this->transferObject   = $transferObject;
         $this->metaReader       = new MetaReader($transferObject);
         $this->propertyAccessor = new PropertyAccessor();
         $this->typeCaster       = new TypeCaster();
@@ -59,21 +39,19 @@ class TransferObjectHydrator
         return $request->isMethod('GET') ? $request->query->all() : self::getBody($request);
     }
 
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request) : void
     {
         $this->hydrate(self::payload($request));
     }
 
-    /**
-     * @param $data
-     */
-    public function hydrate($data): void
+    public function hydrate(array|Request $data): void
     {
         if ($data instanceof Request) {
             trigger_error('Passing Request object in hydrate() is deprecated and will be removed in version 2.0 use handleRequest() instead',
                 E_USER_DEPRECATED);
 
             $this->handleRequest($data);
+
             return;
         }
 
@@ -98,14 +76,7 @@ class TransferObjectHydrator
         $this->runCallbacks($this->metaReader->getOnObjectHydratedAnnotations());
     }
 
-    /**
-     * @param string $type
-     * @param $value
-     * @param array $extra
-     *
-     * @return array|bool|\DateTime|null|object
-     */
-    private function castType(string $type, $value, array $extra = [])
+    private function castType(string $type, $value, array $extra = []) : mixed
     {
         if (null === $value) {
             return null;
@@ -150,11 +121,9 @@ class TransferObjectHydrator
     }
 
     /**
-     * @param array $callbacks
-     *
-     * @throws \Exception
+     * @throws InvalidArgumentException
      */
-    private function runCallbacks(array $callbacks)
+    private function runCallbacks(array $callbacks) : void
     {
         foreach ($callbacks as $event) {
             if (!empty($event->method)) {
@@ -162,38 +131,25 @@ class TransferObjectHydrator
             } elseif (is_callable($event->callback)) {
                 ($event->callback)($this->transferObject);
             } else {
-                throw new \Exception('Invalid callback');
+                throw new InvalidArgumentException('Invalid callback');
             }
         }
     }
 
-    /**
-     * @param string $property
-     *
-     * @return bool
-     */
-    public function hasValue(string $property): bool
+    public function hasValue(string $property) : bool
     {
         return array_key_exists($property, $this->data);
     }
 
-    /**
-     * @param string $property
-     *
-     * @return mixed|null
-     */
-    private function getValue(string $property)
+    private function getValue(string $property) : mixed
     {
         return $this->data[$property] ?? null;
     }
 
     /**
-     * @param Request $request
-     *
-     * @return array
-     * @throws \Exception
+     * @throws InvalidArgumentException
      */
-    private static function getBody(Request $request): array
+    private static function getBody(Request $request) : array
     {
         if (!$request->getContent()) {
             return [];
@@ -202,13 +158,13 @@ class TransferObjectHydrator
         $body = json_decode($request->getContent(), true);
 
         if (json_last_error()) {
-            throw new \Exception('Invalid JSON');
+            throw new InvalidArgumentException('Invalid JSON');
         }
 
         return $body;
     }
 
-    public function runOnObjectValidCallbacks()
+    public function runOnObjectValidCallbacks() : void
     {
         $this->runCallbacks($this->metaReader->getOnObjectValidAnnotations());
     }

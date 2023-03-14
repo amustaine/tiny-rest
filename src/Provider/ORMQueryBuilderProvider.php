@@ -10,14 +10,9 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
 {
     use SortTrait, FilterTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
+
     }
 
     abstract public function getQueryBuilder(TransferObjectInterface $transferObject) : QueryBuilder;
@@ -33,7 +28,7 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
         return $queryBuilder;
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->provide()->getQuery()->getResult();
     }
@@ -43,7 +38,7 @@ abstract class ORMQueryBuilderProvider implements ProviderInterface
         return $this->entityManager->createQueryBuilder();
     }
 
-    protected function applySort(QueryBuilder $queryBuilder)
+    protected function applySort(QueryBuilder $queryBuilder) : void
     {
         $queryBuilder->addOrderBy($this->sort->getField(), $this->sort->getSortDir());
     }

@@ -12,14 +12,9 @@ abstract class NativeQueryProvider implements ProviderInterface
 {
     use SortTrait, FilterTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
+
     }
 
     /**
@@ -47,7 +42,7 @@ abstract class NativeQueryProvider implements ProviderInterface
         return new NativeQueryBuilder($this->entityManager, $qb, $this->getRsm($this->filter));
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->provide()->createNativeQuery()->getResult();
     }
@@ -68,7 +63,7 @@ abstract class NativeQueryProvider implements ProviderInterface
         return $this->entityManager;
     }
 
-    protected function applySort(QueryBuilder $queryBuilder)
+    protected function applySort(QueryBuilder $queryBuilder) : void
     {
         $queryBuilder->addOrderBy($this->sort->getField(), $this->sort->getSortDir());
     }
