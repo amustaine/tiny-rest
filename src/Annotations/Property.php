@@ -14,7 +14,7 @@ use TinyRest\Attributes\AttributeTrait;
 class Property implements AttributeInterface
 {
     use AttributeTrait;
-    
+
     const TYPE_STRING     = 'string';
     const TYPE_ARRAY      = 'array';
     const TYPE_INTEGER    = 'integer';
@@ -22,24 +22,24 @@ class Property implements AttributeInterface
     const TYPE_BOOLEAN    = 'boolean';
     const TYPE_DATETIME   = 'datetime';
     const COMMA_SEPARATED = 'commaSeparated';
-    
+
     public function __construct(
         array $options = [],
-        public ?string $name = null,
-        public ?string $type = null,
-        public bool    $mapped = true,
+        public ?string $name       = null,
+        public ?string $type       = null,
+        public bool    $mapped     = true,
         public bool    $resettable = false,
-        public array   $extra = [],
+        public array   $extra      = [],
     )
     {
         $this->populateProperties($options);
-        
-        if (!empty($this->type) && !in_array($this->type, self::allTypes())) {
+
+        if (!empty($this->type) && !in_array($this->type, self::allTypes()) && !class_exists($this->type)) {
             throw new InvalidArgumentException("Property type '$this->type' is not supported.");
         }
     }
-    
-    public static function allTypes()
+
+    public static function allTypes() : array
     {
         return [
             self::TYPE_STRING,
