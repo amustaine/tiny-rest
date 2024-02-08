@@ -1,6 +1,6 @@
 {
     "name": "amustaine/tiny-rest",
-    "description": "Rest",
+    "description": "A light rest api framework, fork of RuSS-B/tiny-rest",
     "type": "library",
     "require": {
         "php": "^8.1",
@@ -22,8 +22,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "RuSS",
-            "email": "russ.developer@gmail.com"
+            "name": "Alexey Buturlakin",
+            "email": "alexbuturlakin@gmail.com"
         }
     ],
     "minimum-stability": "stable",
