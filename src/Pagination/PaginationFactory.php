@@ -21,7 +21,7 @@ class PaginationFactory
 {
     public function __construct(private readonly RouterInterface $router, private readonly RequestStack $requestStack)
     {
-        
+
     }
 
     public function createCollection(PaginationModel $paginationModel, ProviderInterface $dataProvider) : PaginatedCollection
@@ -92,9 +92,14 @@ class PaginationFactory
         };
     }
 
-    private function getRouteBuilder()
+    private function getRouteBuilder() : ?callable
     {
-        $request     = $this->requestStack->getCurrentRequest();
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (null === $request) {
+            return null;
+        }
+
         $routeName   = $request->get('_route');
         $queryParams = $request->query->all();
         $routeParams = array_merge($request->attributes->get('_route_params') ?? [], $queryParams);
