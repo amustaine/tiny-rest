@@ -157,7 +157,7 @@ class TransferObjectHydrator
 
         $body = json_decode($request->getContent(), true);
 
-        if (json_last_error()) {
+        if (json_last_error() || null === $body) {
             throw new InvalidArgumentException('Invalid JSON');
         }
 
