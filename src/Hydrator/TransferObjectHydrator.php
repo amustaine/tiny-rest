@@ -108,10 +108,24 @@ class TransferObjectHydrator
                 break;
             default :
                 if (class_exists($type)) {
-                    $transferObject = new $type;
-                    (new TransferObjectHydrator($transferObject))->hydrate($value);
+                    if (is_array($value) && array_is_list($value)) {
+                        $items = [];
 
-                    $value = $transferObject;
+                        foreach ($value as $row) {
+                            $transferObject = new $type;
+
+                            (new TransferObjectHydrator($transferObject))->hydrate($row);
+
+                            $items[] = $transferObject;
+                        }
+
+                        $value = $items;
+                    } else {
+                        $transferObject = new $type;
+                        (new TransferObjectHydrator($transferObject))->hydrate($value);
+
+                        $value = $transferObject;
+                    }
                 } else {
                     throw new \InvalidArgumentException(sprintf('Unknown type given: "%s"', $type));
                 }
