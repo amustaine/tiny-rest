@@ -92,6 +92,7 @@ class PaginationFactory
                 ->createQueryBuilder()
                 ->select('COUNT(*) as total_count')
                 ->from("($mainQbClone)", 'tmp')
+                ->setParameters($mainQb->getParameters(), $mainQb->getParameterTypes())
             ;
         };
     }
