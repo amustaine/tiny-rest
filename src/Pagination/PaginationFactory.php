@@ -2,6 +2,7 @@
 
 namespace TinyRest\Pagination;
 
+use Doctrine\DBAL\Connection;
 use TinyRest\Model\PaginationModel;
 use TinyRest\Provider\ProviderInterface;
 use TinyRest\Pagination\Adapter\NativeQueryAdapter;
@@ -19,7 +20,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 class PaginationFactory
 {
-    public function __construct(private readonly RouterInterface $router, private readonly RequestStack $requestStack)
+    public function __construct(private readonly RouterInterface $router, private readonly RequestStack $requestStack, private readonly Connection $conn)
     {
 
     }
@@ -82,13 +83,16 @@ class PaginationFactory
      */
     private function getQueryBuilderModifier() : \Closure
     {
-        return function (QueryBuilder $queryBuilder) {
-            $qb = clone $queryBuilder;
+        return function (QueryBuilder $mainQb) {
+            $mainQbClone = (clone $mainQb)
+                ->resetOrderBy()
+            ;
 
-            $queryBuilder
-                ->resetQueryParts()
+            return $this->conn
+                ->createQueryBuilder()
                 ->select('COUNT(*) as total_count')
-                ->from("({$qb})", 'tmp');
+                ->from("($mainQbClone)", 'tmp')
+            ;
         };
     }
 
