@@ -108,7 +108,7 @@ class TransferObjectHydrator
                 break;
             default :
                 if (class_exists($type)) {
-                    if (is_array($value) && array_is_list($value)) {
+                    if (is_array($value) && array_is_list($value) && !empty($value)) {
                         $items = [];
 
                         foreach ($value as $row) {
