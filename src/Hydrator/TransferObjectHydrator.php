@@ -12,6 +12,7 @@
 namespace TinyRest\Hydrator;
 
 use InvalidArgumentException;
+use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use TinyRest\Annotations\Property;
@@ -107,6 +108,12 @@ class TransferObjectHydrator
                 $value = $this->typeCaster->getFloat($value);
                 break;
             default :
+                if (enum_exists($type) && (new ReflectionClass($type))->isEnum()) {
+                    $value = $type::tryFrom($value);
+
+                    break;
+                }
+
                 if (class_exists($type)) {
                     if (is_array($value) && array_is_list($value) && !empty($value)) {
                         $items = [];

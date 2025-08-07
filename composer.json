@@ -3,7 +3,7 @@
     "description": "A light rest api framework, fork of RuSS-B/tiny-rest",
     "type": "library",
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "ext-json": "*",
         "pagerfanta/pagerfanta": "^4.0",
         "doctrine/common": "^3.4",
