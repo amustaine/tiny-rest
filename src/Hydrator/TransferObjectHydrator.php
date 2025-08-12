@@ -115,7 +115,11 @@ class TransferObjectHydrator
                 }
 
                 if (class_exists($type)) {
-                    if (is_array($value) && array_is_list($value) && !empty($value)) {
+                    if (empty($value)) {
+                        return $value;
+                    }
+
+                    if (is_array($value) && array_is_list($value)) {
                         $items = [];
 
                         foreach ($value as $row) {
