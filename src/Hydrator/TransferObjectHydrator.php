@@ -108,7 +108,7 @@ class TransferObjectHydrator
                 $value = $this->typeCaster->getFloat($value);
                 break;
             default :
-                if (enum_exists($type) && (new ReflectionClass($type))->isEnum()) {
+                if (enum_exists($type) && (new ReflectionClass($type))->isEnum() && !empty($value)) {
                     $value = $type::tryFrom($value);
 
                     break;
@@ -116,7 +116,7 @@ class TransferObjectHydrator
 
                 if (class_exists($type)) {
                     if (empty($value)) {
-                        return $value;
+                        return null;
                     }
 
                     if (is_array($value) && array_is_list($value)) {
