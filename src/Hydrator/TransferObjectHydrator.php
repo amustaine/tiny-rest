@@ -116,7 +116,7 @@ class TransferObjectHydrator
 
                 if (class_exists($type)) {
                     if (empty($value)) {
-                        return null;
+                        return $extra['default'] ?? null;
                     }
 
                     if (is_array($value) && array_is_list($value)) {
